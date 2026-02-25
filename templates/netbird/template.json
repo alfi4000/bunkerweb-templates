@@ -1,0 +1,136 @@
+{
+  "id": "netbird",
+  "name": "NetBird self-hosted template with gRPC and websocket routing",
+  "settings": {
+    "SERVER_NAME": "netbird.example.com",
+    "AUTO_LETS_ENCRYPT": "yes",
+    "USE_LETS_ENCRYPT_STAGING": "no",
+    "USE_LETS_ENCRYPT_WILDCARD": "no",
+    "LETS_ENCRYPT_CHALLENGE": "http",
+    "LETS_ENCRYPT_DNS_PROVIDER": "",
+    "LETS_ENCRYPT_DNS_PROPAGATION": "default",
+    "LETS_ENCRYPT_DNS_CREDENTIAL_ITEM": "",
+    "USE_CUSTOM_SSL": "no",
+    "CUSTOM_SSL_CERT_PRIORITY": "file",
+    "CUSTOM_SSL_CERT": "",
+    "CUSTOM_SSL_KEY": "",
+    "CUSTOM_SSL_CERT_DATA": "",
+    "CUSTOM_SSL_KEY_DATA": "",
+    "ALLOWED_METHODS": "GET|POST|HEAD|OPTIONS|PUT|DELETE|PATCH",
+    "USE_LIMIT_REQ": "yes",
+    "LIMIT_REQ_RATE": "15r/s",
+    "LIMIT_CONN_MAX_HTTP1": "30",
+    "LIMIT_CONN_MAX_HTTP2": "200",
+    "LIMIT_CONN_MAX_HTTP3": "200",
+    "USE_REVERSE_PROXY": "yes",
+    "REVERSE_PROXY_INTERCEPT_ERRORS": "no",
+    "REVERSE_PROXY_URL": "/relay",
+    "REVERSE_PROXY_HOST": "http://netbird-server",
+    "REVERSE_PROXY_WS": "yes",
+    "REVERSE_PROXY_READ_TIMEOUT": "1d",
+    "REVERSE_PROXY_URL_1": "/ws-proxy/",
+    "REVERSE_PROXY_HOST_1": "http://netbird-server",
+    "REVERSE_PROXY_WS_1": "yes",
+    "REVERSE_PROXY_READ_TIMEOUT_1": "1d",
+    "REVERSE_PROXY_URL_2": "/api/",
+    "REVERSE_PROXY_HOST_2": "http://netbird-server",
+    "REVERSE_PROXY_URL_3": "/oauth2/",
+    "REVERSE_PROXY_HOST_3": "http://netbird-server",
+    "REVERSE_PROXY_READ_TIMEOUT_3": "1d",
+    "USE_GRPC": "yes",
+    "GRPC_URL": "/signalexchange.SignalExchange/",
+    "GRPC_HOST": "grpc://netbird-server:80",
+    "GRPC_SOCKET_KEEPALIVE": "on",
+    "GRPC_READ_TIMEOUT": "1d",
+    "GRPC_SEND_TIMEOUT": "1d",
+    "GRPC_URL_1": "/management.ManagementService/",
+    "GRPC_HOST_1": "grpc://netbird-server:80",
+    "GRPC_SOCKET_KEEPALIVE_1": "on",
+    "GRPC_READ_TIMEOUT_1": "1d",
+    "GRPC_SEND_TIMEOUT_1": "1d",
+    "REVERSE_PROXY_URL_999": "/",
+    "REVERSE_PROXY_HOST_999": "http://netbird-dashboard"
+  },
+  "configs": ["modsec/netbird_false_positives.conf"],
+  "steps": [
+    {
+      "title": "Step 1 - Domain and HTTPS",
+      "subtitle": "Choose the public NetBird domain and how TLS certificates are managed.",
+      "settings": [
+        "SERVER_NAME",
+        "AUTO_LETS_ENCRYPT",
+        "USE_LETS_ENCRYPT_STAGING",
+        "USE_LETS_ENCRYPT_WILDCARD",
+        "LETS_ENCRYPT_CHALLENGE",
+        "LETS_ENCRYPT_DNS_PROVIDER",
+        "LETS_ENCRYPT_DNS_PROPAGATION",
+        "LETS_ENCRYPT_DNS_CREDENTIAL_ITEM",
+        "USE_CUSTOM_SSL",
+        "CUSTOM_SSL_CERT_PRIORITY",
+        "CUSTOM_SSL_CERT",
+        "CUSTOM_SSL_KEY",
+        "CUSTOM_SSL_CERT_DATA",
+        "CUSTOM_SSL_KEY_DATA"
+      ]
+    },
+    {
+      "title": "Step 2 - Backend services",
+      "subtitle": "Set where BunkerWeb reaches your NetBird server and dashboard backends.",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "USE_GRPC",
+        "REVERSE_PROXY_INTERCEPT_ERRORS",
+        "REVERSE_PROXY_HOST",
+        "REVERSE_PROXY_HOST_1",
+        "REVERSE_PROXY_HOST_2",
+        "REVERSE_PROXY_HOST_3",
+        "GRPC_HOST",
+        "GRPC_HOST_1",
+        "REVERSE_PROXY_HOST_999"
+      ]
+    },
+    {
+      "title": "Step 3 - HTTP and websocket routes",
+      "subtitle": "Map relay, websocket, API, OAuth2, and dashboard paths to the right upstream.",
+      "settings": [
+        "REVERSE_PROXY_URL",
+        "REVERSE_PROXY_WS",
+        "REVERSE_PROXY_URL_1",
+        "REVERSE_PROXY_WS_1",
+        "REVERSE_PROXY_URL_2",
+        "REVERSE_PROXY_URL_3",
+        "REVERSE_PROXY_URL_999"
+      ]
+    },
+    {
+      "title": "Step 4 - gRPC and long-lived connections",
+      "subtitle": "Configure gRPC method prefixes plus keepalive and timeout values for persistent sessions.",
+      "settings": [
+        "GRPC_URL",
+        "GRPC_URL_1",
+        "GRPC_SOCKET_KEEPALIVE",
+        "GRPC_SOCKET_KEEPALIVE_1",
+        "GRPC_READ_TIMEOUT",
+        "GRPC_SEND_TIMEOUT",
+        "GRPC_READ_TIMEOUT_1",
+        "GRPC_SEND_TIMEOUT_1",
+        "REVERSE_PROXY_READ_TIMEOUT",
+        "REVERSE_PROXY_READ_TIMEOUT_1",
+        "REVERSE_PROXY_READ_TIMEOUT_3"
+      ]
+    },
+    {
+      "title": "Step 5 - Request limits and ModSecurity",
+      "subtitle": "Tune allowed methods and request/connection limits, and keep OAuth2 CRS exclusions.",
+      "settings": [
+        "ALLOWED_METHODS",
+        "USE_LIMIT_REQ",
+        "LIMIT_REQ_RATE",
+        "LIMIT_CONN_MAX_HTTP1",
+        "LIMIT_CONN_MAX_HTTP2",
+        "LIMIT_CONN_MAX_HTTP3"
+      ],
+      "configs": ["modsec/netbird_false_positives.conf"]
+    }
+  ]
+}

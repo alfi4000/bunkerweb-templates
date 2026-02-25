@@ -5,7 +5,11 @@ manual releases can pull details straight from this file.
 
 ## Unreleased
 
-- Nothing yet.
+- [@github-handle] Add a NetBird template with reverse proxy, gRPC, and ModSecurity defaults.
+
+## Templates release v0.2 - 2026-02-20
+
+- [@TheophileDiot] Align Jellyfin reverse proxy config with official docs (ModSec, rate limit, CSP, Permissions-Policy) + fix issues with the CRS
 
 ## Templates release v0.1 - 2025-11-03
 

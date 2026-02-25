@@ -1,0 +1,148 @@
+name: Dev Template Pre-release
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  package-and-publish:
+    name: Package templates and publish dev pre-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: dev-template-prerelease
+      cancel-in-progress: true
+    env:
+      RELEASE_TAG: dev
+      RELEASE_NAME: Templates dev pre-release
+      RELEASE_DIR: release-assets
+      ARCHIVE_NAME: templates-dev.zip
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Package templates into a single zip archive
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          release_dir="${RELEASE_DIR}"
+          templates_root="templates"
+          archive_name="${ARCHIVE_NAME}"
+          zip_path="${release_dir}/${archive_name}"
+
+          mkdir -p "${release_dir}"
+
+          if [[ ! -d "${templates_root}" ]]; then
+            echo "::error::Templates directory not found at ${templates_root}"
+            exit 1
+          fi
+
+          if ! command -v zip >/dev/null 2>&1; then
+            echo "::error::zip command not available on runner"
+            exit 1
+          fi
+
+          mapfile -t templates < <(find "${templates_root}" -mindepth 1 -maxdepth 1 -type d -printf '%P\n' | sort)
+
+          if [[ ${#templates[@]} -eq 0 ]]; then
+            echo "::error::No template directories found under ${templates_root}"
+            exit 1
+          fi
+
+          rm -f "${zip_path}"
+          echo "Creating combined archive ${zip_path} containing ${#templates[@]} template directories"
+          (
+            cd "${templates_root}"
+            shopt -s dotglob
+            zip -r -9 "../${zip_path}" -- ./*
+          )
+
+          if [[ ! -f "${zip_path}" ]]; then
+            echo "::error::Archive was not created at ${zip_path}"
+            exit 1
+          fi
+
+      - name: Build release notes
+        id: prepare-release-notes
+        shell: bash
+        env:
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          notes="Automated pre-release from the dev branch.\n\n"
+          notes+="- Branch: dev\n"
+          notes+="- Commit: ${CURRENT_SHA}\n"
+
+          changelog_path="CHANGELOG.md"
+          unreleased_section=""
+
+          if [[ -f "${changelog_path}" ]]; then
+            unreleased_section=$(
+              awk '
+                BEGIN { capture = 0 }
+                /^##[[:space:]]+Unreleased[[:space:]]*$/ {
+                  capture = 1
+                  print
+                  next
+                }
+                /^##[[:space:]]+/ {
+                  if (capture) {
+                    exit
+                  }
+                }
+                capture { print }
+              ' "${changelog_path}"
+            )
+          fi
+
+          if [[ -n "${unreleased_section//[[:space:]]/}" ]]; then
+            notes+="\n${unreleased_section}\n"
+          fi
+
+          {
+            echo "resolved_release_notes<<EOF"
+            printf '%b\n' "${notes}"
+            echo "EOF"
+          } >> "${GITHUB_OUTPUT}"
+
+      - name: Move dev tag to current commit
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "${RELEASE_TAG}" "${GITHUB_SHA}"
+          git push origin "refs/tags/${RELEASE_TAG}" --force
+
+      - name: Delete existing dev release (if any)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if gh release view "${RELEASE_TAG}" >/dev/null 2>&1; then
+            gh release delete "${RELEASE_TAG}" --yes
+          fi
+
+      - name: Create or update GitHub pre-release and upload assets
+        uses: softprops/action-gh-release@6da8fa9354ddfdc4aeace5fc48d7f679b5214090 # v2.4.1
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ env.RELEASE_NAME }}
+          body: ${{ steps.prepare-release-notes.outputs.resolved_release_notes }}
+          draft: false
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: ${{ env.RELEASE_DIR }}/${{ env.ARCHIVE_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
