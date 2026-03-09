@@ -1,0 +1,117 @@
+{
+  "id": "xen-orchestra",
+  "name": "Xen Orchestra reverse proxy with WebSocket support",
+  "configs": ["modsec/xen-orchestra_false_positives.conf"],
+  "settings": {
+    "SERVER_NAME": "xo.example.com",
+    "USE_REVERSE_PROXY": "yes",
+    "REVERSE_PROXY_URL": "/",
+    "REVERSE_PROXY_HOST": "https://192.168.1.1",
+    "REVERSE_PROXY_WS": "yes",
+    "REVERSE_PROXY_SSL_SNI": "no",
+    "REVERSE_PROXY_KEEPALIVE": "no",
+    "AUTO_LETS_ENCRYPT": "yes",
+    "USE_LETS_ENCRYPT_STAGING": "no",
+    "USE_LETS_ENCRYPT_WILDCARD": "no",
+    "LETS_ENCRYPT_SERVER": "letsencrypt",
+    "LETS_ENCRYPT_CHALLENGE": "http",
+    "GENERATE_SELF_SIGNED_SSL": "no",
+    "USE_CUSTOM_SSL": "no",
+    "HTTP2": "yes",
+    "HTTP3": "yes",
+    "SSL_PROTOCOLS": "TLSv1.2 TLSv1.3",
+    "MAX_CLIENT_SIZE": "100m",
+    "ALLOWED_METHODS": "GET|POST|HEAD|OPTIONS|PUT|DELETE|PATCH",
+    "USE_GZIP": "yes",
+    "GZIP_PROXIED": "expired no-cache no-store private auth",
+    "USE_BAD_BEHAVIOR": "no",
+    "USE_ANTIBOT": "no",
+    "USE_BLACKLIST": "yes",
+    "USE_DNSBL": "no",
+    "USE_MODSECURITY": "yes",
+    "USE_MODSECURITY_CRS": "yes",
+    "SECURITY_MODE": "block",
+    "LIMIT_REQ_RATE": "6r/s",
+    "LIMIT_REQ_URL_1": "/jsonrpc",
+    "LIMIT_REQ_RATE_1": "15r/s",
+    "LIMIT_CONN_MAX_HTTP1": "50",
+    "LIMIT_CONN_MAX_HTTP2": "200",
+    "LIMIT_CONN_MAX_HTTP3": "200",
+    "KEEP_UPSTREAM_HEADERS": "*",
+    "REFERRER_POLICY": "no-referrer-when-downgrade",
+    "CONTENT_SECURITY_POLICY": "",
+    "PERMISSIONS_POLICY": "",
+    "COOKIE_FLAGS": "* SameSite=Lax",
+    "INTERCEPTED_ERROR_CODES": "400 401 403 404 405 429 500 502 503 504"
+  },
+  "steps": [
+    {
+      "title": "Front service",
+      "subtitle": "Configure the public-facing hostname and TLS settings for Xen Orchestra",
+      "settings": [
+        "SERVER_NAME",
+        "AUTO_LETS_ENCRYPT",
+        "USE_LETS_ENCRYPT_STAGING",
+        "USE_LETS_ENCRYPT_WILDCARD",
+        "LETS_ENCRYPT_SERVER",
+        "LETS_ENCRYPT_CHALLENGE",
+        "GENERATE_SELF_SIGNED_SSL",
+        "USE_CUSTOM_SSL",
+        "HTTP2",
+        "HTTP3",
+        "SSL_PROTOCOLS"
+      ]
+    },
+    {
+      "title": "Reverse proxy",
+      "subtitle": "Configure the connection to the Xen Orchestra backend (HTTPS with self-signed cert and WebSocket support)",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "REVERSE_PROXY_URL",
+        "REVERSE_PROXY_HOST",
+        "REVERSE_PROXY_WS",
+        "REVERSE_PROXY_SSL_SNI",
+        "REVERSE_PROXY_KEEPALIVE",
+        "MAX_CLIENT_SIZE",
+        "ALLOWED_METHODS"
+      ]
+    },
+    {
+      "title": "Performance",
+      "subtitle": "Compression and caching settings suited for Xen Orchestra API traffic",
+      "settings": ["USE_GZIP", "GZIP_PROXIED"]
+    },
+    {
+      "title": "Rate limiting",
+      "subtitle": "Configure connection and request limits — /jsonrpc is given a higher limit to allow Xen Orchestra's API polling",
+      "settings": [
+        "LIMIT_REQ_RATE",
+        "LIMIT_REQ_URL_1",
+        "LIMIT_REQ_RATE_1",
+        "LIMIT_CONN_MAX_HTTP1",
+        "LIMIT_CONN_MAX_HTTP2",
+        "LIMIT_CONN_MAX_HTTP3"
+      ]
+    },
+    {
+      "title": "Security",
+      "subtitle": "Security settings — bad behavior detection is disabled because Xen Orchestra's API generates traffic patterns that trigger false positives",
+      "settings": [
+        "SECURITY_MODE",
+        "USE_BAD_BEHAVIOR",
+        "USE_ANTIBOT",
+        "USE_BLACKLIST",
+        "USE_DNSBL",
+        "USE_MODSECURITY",
+        "USE_MODSECURITY_CRS",
+        "KEEP_UPSTREAM_HEADERS",
+        "REFERRER_POLICY",
+        "CONTENT_SECURITY_POLICY",
+        "PERMISSIONS_POLICY",
+        "COOKIE_FLAGS",
+        "INTERCEPTED_ERROR_CODES"
+      ],
+      "configs": ["modsec/xen-orchestra_false_positives.conf"]
+    }
+  ]
+}
