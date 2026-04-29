@@ -5,6 +5,7 @@ manual releases can pull details straight from this file.
 
 ## Unreleased
 
+- [@YouKyi] Fix ModSecurity rule syntax in `configs/modsec/wordpress_false_positives.conf`: replace incorrect `ruleRemoveTargetById` directives with `ruleRemoveById` and remove unused rule `949110` from XML-RPC false-positive configuration.
 - [@TheophileDiot] Expand the Nextcloud template `ALLOWED_METHODS` with `SEARCH`, `MKCALENDAR`, `ACL`, and `PATCH` to cover WebDAV search, CalDAV, DAVACL, and chunked upload v2. Align `tx.allowed_methods` in `configs/modsec/nextcloud_false_positives.conf` with the template definition (also restores the missing `REPORT` verb).
 
 ## Templates release v0.4 - 2026-04-24
