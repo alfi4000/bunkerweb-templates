@@ -5,6 +5,8 @@ manual releases can pull details straight from this file.
 
 ## Unreleased
 
+- [@TheophileDiot] Expand the Nextcloud template `ALLOWED_METHODS` with `SEARCH`, `MKCALENDAR`, `ACL`, and `PATCH` to cover WebDAV search, CalDAV, DAVACL, and chunked upload v2. Align `tx.allowed_methods` in `configs/modsec/nextcloud_false_positives.conf` with the template definition (also restores the missing `REPORT` verb).
+
 ## Templates release v0.4 - 2026-04-24
 
 - [@TheophileDiot] Add Xen Orchestra template with reverse proxy, WebSocket, and rate limiting defaults.
