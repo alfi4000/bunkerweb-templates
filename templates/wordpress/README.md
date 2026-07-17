@@ -4,6 +4,22 @@
 
 Provision a curated BunkerWeb configuration for WordPress. This template ships sensible defaults for TLS, reverse proxying, request throttling, crawler whitelisting, and CRS exclusions tuned for WordPress traffic so you can get a secure site online quickly.
 
+## REST API PUT/DELETE disabled by default
+
+The default `ALLOWED_METHODS` value permits `GET`, `POST`, `HEAD`, and `OPTIONS` only, so the WordPress REST API stays reachable for reads and `POST` writes. Clients that rely on `PUT` or `DELETE` verbs (for example some headless integrations or block-editor plugins) are blocked until you add those methods.
+
+Default (`PUT`/`DELETE` blocked):
+
+```text
+"ALLOWED_METHODS": "GET|POST|HEAD|OPTIONS"
+```
+
+Updated (`PUT`/`DELETE` allowed):
+
+```text
+"ALLOWED_METHODS": "GET|POST|HEAD|OPTIONS|PUT|DELETE"
+```
+
 ## Prerequisites
 
 - A running WordPress upstream accessible on your network (for example a container named `mywp`).

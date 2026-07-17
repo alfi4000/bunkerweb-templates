@@ -133,7 +133,10 @@ plugins/
 | [Jellyfin](templates/jellyfin/)           | Media streaming template with reverse proxy tuning               | `templates/jellyfin/`      |
 | [Nextcloud](templates/nextcloud/)         | Secure template with WebDAV-aware defaults                       | `templates/nextcloud/`     |
 | [NetBird](templates/netbird/)             | Self-hosted template with gRPC and websocket routing             | `templates/netbird/`       |
+| [Pi-hole](templates/pi-hole/)             | Reverse proxy template with admin UI and API tuning              | `templates/pi-hole/`       |
+| [Synapse](templates/synapse/)             | Matrix homeserver template with well-known delegation           | `templates/synapse/`       |
 | [Tomcat](templates/tomcat/)               | Reverse proxy template with servlet-friendly defaults            | `templates/tomcat/`        |
+| [Tuwunel](templates/tuwunel/)             | Matrix homeserver reverse proxy with WebSocket and delegation    | `templates/tuwunel/`       |
 | [Xen Orchestra](templates/xen-orchestra/) | Reverse proxy template with WebSocket and rate limiting defaults | `templates/xen-orchestra/` |
 | [WordPress](templates/wordpress/)         | Secure template with essential hardening defaults                | `templates/wordpress/`     |
 
