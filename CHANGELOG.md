@@ -5,6 +5,7 @@ manual releases can pull details straight from this file.
 
 ## Unreleased
 
+- [@palmcoasty] Add Tuwunel (Matrix homeserver) template with reverse proxy, rate limiting, and .well-known delegation.
 - [@palmcoasty] Add Synapse (Matrix homeserver) template with reverse proxy, well-known delegation, and upload limits.
 - [@palmcoasty] Document that the WordPress REST API PUT/DELETE methods are disabled by default and how to enable them via ALLOWED_METHODS.
 - [@TheophileDiot] Clarify template installation through the web UI and plugin bundles, and centralize setup guidance in the root README.
