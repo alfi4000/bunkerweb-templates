@@ -1,8 +1,7 @@
 {
-  "id": "pihole",
-  "name": "Pihole BunkerWeb Configuration",
+  "id": "pi-hole",
+  "name": "Pi-hole reverse proxy template with admin UI and API tuning",
   "settings": {
-    "IS_DRAFT": "no",
     "SERVER_NAME": "example.com",
     "BAD_BEHAVIOR_STATUS_CODES": "400 403 404 405 429 444",
     "BAD_BEHAVIOR_THRESHOLD": "20",
@@ -10,21 +9,66 @@
     "USE_BUNKERNET": "yes",
     "USE_DNSBL": "no",
     "GZIP_PROXIED": "expired no-cache no-store private auth",
-    "REMOVE_HEADERS": "Server Expect-CT X-Powered-By X-AspNet-Version X-AspNetMvc-Version Public-Key-Pins X-Frame-Options",
+    "REMOVE_HEADERS": "Server Expect-CT X-Powered-By X-AspNet-Version X-AspNetMvc-Version Public-Key-Pins",
     "AUTO_LETS_ENCRYPT": "yes",
     "EMAIL_LETS_ENCRYPT": "registration@example.com",
     "LIMIT_CONN_MAX_HTTP2": "50",
     "LIMIT_CONN_MAX_HTTP3": "50",
     "LIMIT_REQ_RATE": "20r/s",
     "USE_METRICS": "no",
-    "MODSECURITY_SEC_RULE_ENGINE": "DetectionOnly",
     "USE_REAL_IP": "yes",
     "REAL_IP_FROM": "172.65.0.0/16 172.64.0.0/13 104.16.0.0/13",
     "REAL_IP_HEADER": "CF-Connecting-IP",
     "USE_REVERSE_PROXY": "yes",
-    "REVERSE_PROXY_HOST_1": "http://pihole-server-ip:80/",
+    "REVERSE_PROXY_URL_1": "/",
+    "REVERSE_PROXY_HOST_1": "http://pihole-server-ip:80",
     "REVERSE_PROXY_WS_1": "yes",
     "REVERSE_PROXY_KEEPALIVE_1": "yes",
     "REVERSE_PROXY_HIDE_HEADERS_1": "",
-    "REVERSE_PROXY_CONNECT_TIMEOUT_1": "30s"
-  }
+    "REVERSE_PROXY_CONNECT_TIMEOUT_1": "30s",
+    "REVERSE_PROXY_READ_TIMEOUT_1": "90s"
+  },
+  "configs": ["modsec/pihole_false_positives.conf"],
+  "steps": [
+    {
+      "title": "Domain and TLS",
+      "subtitle": "Point the template at your Pi-hole hostname and enable certificates.",
+      "settings": ["SERVER_NAME", "AUTO_LETS_ENCRYPT", "EMAIL_LETS_ENCRYPT"]
+    },
+    {
+      "title": "Reverse proxy",
+      "subtitle": "Tell BunkerWeb where your Pi-hole upstream lives and expose the admin UI and API routes.",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "REVERSE_PROXY_URL_1",
+        "REVERSE_PROXY_HOST_1",
+        "REVERSE_PROXY_WS_1",
+        "REVERSE_PROXY_KEEPALIVE_1",
+        "REVERSE_PROXY_HIDE_HEADERS_1",
+        "REVERSE_PROXY_CONNECT_TIMEOUT_1",
+        "REVERSE_PROXY_READ_TIMEOUT_1"
+      ]
+    },
+    {
+      "title": "Security and performance tuning",
+      "subtitle": "Review bad-behaviour, rate limiting, real IP, and ModSecurity exclusions for the Pi-hole admin UI and API.",
+      "settings": [
+        "BAD_BEHAVIOR_STATUS_CODES",
+        "BAD_BEHAVIOR_THRESHOLD",
+        "BAD_BEHAVIOR_BAN_TIME",
+        "USE_BUNKERNET",
+        "USE_DNSBL",
+        "LIMIT_REQ_RATE",
+        "LIMIT_CONN_MAX_HTTP2",
+        "LIMIT_CONN_MAX_HTTP3",
+        "USE_REAL_IP",
+        "REAL_IP_FROM",
+        "REAL_IP_HEADER",
+        "USE_METRICS",
+        "GZIP_PROXIED",
+        "REMOVE_HEADERS"
+      ],
+      "configs": ["modsec/pihole_false_positives.conf"]
+    }
+  ]
+}
