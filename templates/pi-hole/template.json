@@ -17,7 +17,7 @@
     "LIMIT_REQ_RATE": "20r/s",
     "USE_METRICS": "no",
     "USE_REAL_IP": "yes",
-    "REAL_IP_FROM": "172.65.0.0/16 172.64.0.0/13 104.16.0.0/13",
+    "REAL_IP_FROM": "172.64.0.0/13 104.16.0.0/13",
     "REAL_IP_HEADER": "CF-Connecting-IP",
     "USE_REVERSE_PROXY": "yes",
     "REVERSE_PROXY_URL_1": "/",
@@ -28,7 +28,7 @@
     "REVERSE_PROXY_CONNECT_TIMEOUT_1": "30s",
     "REVERSE_PROXY_READ_TIMEOUT_1": "90s"
   },
-  "configs": ["modsec/pihole_false_positives.conf"],
+  "configs": ["modsec-crs/pihole_false_positives.conf"],
   "steps": [
     {
       "title": "Domain and TLS",
@@ -51,7 +51,7 @@
     },
     {
       "title": "Security and performance tuning",
-      "subtitle": "Review bad-behaviour, rate limiting, real IP, and ModSecurity exclusions for the Pi-hole admin UI and API.",
+      "subtitle": "Review bad-behaviour, rate limiting, real IP, and ModSecurity exclusions for the Pi-hole admin UI and API. Defaults are relaxed for self-hosting (DNSBL off, higher ban threshold, 20r/s, metrics off) - see the README security tuning notes before tightening.",
       "settings": [
         "BAD_BEHAVIOR_STATUS_CODES",
         "BAD_BEHAVIOR_THRESHOLD",
@@ -68,7 +68,7 @@
         "GZIP_PROXIED",
         "REMOVE_HEADERS"
       ],
-      "configs": ["modsec/pihole_false_positives.conf"]
+      "configs": ["modsec-crs/pihole_false_positives.conf"]
     }
   ]
 }
