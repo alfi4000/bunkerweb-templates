@@ -31,9 +31,8 @@
     "USE_LIMIT_REQ": "yes",
     "LIMIT_REQ_URL": "/",
     "LIMIT_REQ_RATE": "15r/s",
-    "USE_WHITELIST": "yes",
+    "USE_WHITELIST": "no",
     "WHITELIST_IP": "",
-    "WHITELIST_RDNS": ".google.com .googlebot.com .yandex.ru .yandex.net .yandex.com .search.msn.com .baidu.com .baidu.jp .crawl.yahoo.net .fwd.linkedin.com",
     "WHITELIST_RDNS_GLOBAL": "yes",
     "WHITELIST_ASN": "",
     "SERVE_FILES": "no",
@@ -44,4 +43,84 @@
     "LISTEN_HTTP": "no",
     "BAD_BEHAVIOR_STATUS_CODES": "405",
     "BAD_BEHAVIOR_THRESHOLD": "100"
-  }
+  },
+  "configs": ["server-http/well-known.conf"],
+  "steps": [
+    {
+      "title": "Web service - Front service",
+      "subtitle": "Point the template at your Matrix homeserver domain and configure TLS.",
+      "settings": [
+        "SERVER_NAME",
+        "AUTO_LETS_ENCRYPT",
+        "USE_LETS_ENCRYPT_STAGING",
+        "USE_LETS_ENCRYPT_WILDCARD",
+        "LETS_ENCRYPT_CHALLENGE",
+        "LETS_ENCRYPT_DNS_PROVIDER",
+        "LETS_ENCRYPT_DNS_PROPAGATION",
+        "LETS_ENCRYPT_DNS_CREDENTIAL_ITEM",
+        "USE_CUSTOM_SSL",
+        "CUSTOM_SSL_CERT_PRIORITY",
+        "CUSTOM_SSL_CERT",
+        "CUSTOM_SSL_KEY",
+        "CUSTOM_SSL_CERT_DATA",
+        "CUSTOM_SSL_KEY_DATA"
+      ]
+    },
+    {
+      "title": "Web service - Upstream server",
+      "subtitle": "Direct the reverse proxy to your Tuwunel homeserver, with WebSocket support and long timeouts for federation and long-poll sync.",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "REVERSE_PROXY_HOST",
+        "REVERSE_PROXY_URL",
+        "REVERSE_PROXY_WS",
+        "REVERSE_PROXY_BUFFERING",
+        "REVERSE_PROXY_REQUEST_BUFFERING",
+        "REVERSE_PROXY_KEEPALIVE",
+        "REVERSE_PROXY_CONNECT_TIMEOUT",
+        "REVERSE_PROXY_READ_TIMEOUT",
+        "REVERSE_PROXY_SEND_TIMEOUT"
+      ]
+    },
+    {
+      "title": "HTTP - Matrix specific settings",
+      "subtitle": "Tune request size, allowed methods, and rate limiting for Matrix client and federation traffic.",
+      "settings": [
+        "MAX_CLIENT_SIZE",
+        "ALLOWED_METHODS",
+        "USE_LIMIT_REQ",
+        "LIMIT_REQ_URL",
+        "LIMIT_REQ_RATE"
+      ]
+    },
+    {
+      "title": "Security - Access control",
+      "subtitle": "Tune bad-behavior thresholds and optional IP/ASN whitelisting (disabled by default for this API-only homeserver).",
+      "settings": [
+        "USE_WHITELIST",
+        "WHITELIST_IP",
+        "WHITELIST_RDNS_GLOBAL",
+        "WHITELIST_ASN",
+        "BAD_BEHAVIOR_STATUS_CODES",
+        "BAD_BEHAVIOR_THRESHOLD"
+      ]
+    },
+    {
+      "title": "Performance - Serving and compression",
+      "subtitle": "Control static file serving, caching, compression, and HTTP listeners.",
+      "settings": [
+        "SERVE_FILES",
+        "USE_CLIENT_CACHE",
+        "USE_GZIP",
+        "USE_BROTLI",
+        "HTTP3",
+        "LISTEN_HTTP"
+      ]
+    },
+    {
+      "title": "Federation - Well-known delegation",
+      "subtitle": "Serve the /.well-known/matrix/client and /server delegation files. Edit configs/server-http/well-known.conf to replace example.com with your homeserver domain.",
+      "configs": ["server-http/well-known.conf"]
+    }
+  ]
+}

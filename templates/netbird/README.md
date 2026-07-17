@@ -25,11 +25,8 @@ long-lived timeout defaults suited for control-plane traffic.
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, click
-     **Create new template**, switch to **Raw** mode, paste `template.json`,
-     and save.
-   - *Plugin bundle*: copy `netbird/` into your BunkerWeb plugin
-     `templates/` directory.
+   - Follow the repository's [installation guide](../../README.md#installing-templates)
+     for the web UI or plugin bundle method.
 2. **Assign the template** to your NetBird site (`USE_TEMPLATE=netbird` or
    select it in the UI).
 3. **Adjust domains and TLS** so `SERVER_NAME` and certificate options match
