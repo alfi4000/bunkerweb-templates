@@ -25,11 +25,8 @@ match typical media streaming workloads without sacrificing security headers.
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, click
-     **Create new template**, switch to **Raw** mode, paste the contents of
-     `template.json`, and save.
-   - *Plugin bundle*: copy `jellyfin/` into your BunkerWeb plugin `templates/`
-     directory.
+   - Follow the repository's [installation guide](../../README.md#installing-templates)
+     for the web UI or plugin bundle method.
 2. **Assign the template** to the site serving Jellyfin (`USE_TEMPLATE=jellyfin`
    or choose it in the UI).
 3. **Adjust TLS automation** so `SERVER_NAME` and certificate options reflect

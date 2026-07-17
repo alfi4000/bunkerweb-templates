@@ -1,0 +1,235 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-GB"
+tone_instructions: "Be direct, technical, and actionable. Cite exact lines. Prefer concrete guidance over vague suggestions. Use British English."
+early_access: false
+
+knowledge_base:
+  opt_out: false
+  web_search:
+    enabled: false
+  code_guidelines:
+    enabled: true
+
+code_generation:
+  docstrings:
+    language: "en-GB"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  high_level_summary_in_walkthrough: true
+  high_level_summary_instructions: |
+    Summarise the PR by template (`templates/<service-name>/`) and by concern: `template.json` schema changes, NGINX / ModSecurity config snippets under `configs/`, service-specific `README.md`, repository-wide docs (`README.md`, `CONTRIBUTING.md`, `TEMPLATE_GUIDE.md`, `TEMPLATE_CATALOG.md`), CI workflows (`.github/workflows/`), and tooling (`.pre-commit-config.yaml`, `.prettierignore`).
+    Always call out: security impact of changed BunkerWeb settings (rate limits, allowlists, ModSecurity, TLS, headers), any relaxation of CRS rules or false-positive exclusions, user-visible behaviour changes in the guided import flow, whether the `CHANGELOG.md` `## Unreleased` section was updated, and whether referenced config files actually exist in-repo.
+    Keep the summary terse, technical, and suitable for maintainers curating community templates for a security-critical WAF project.
+  review_status: true
+  review_details: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: false
+  estimate_code_review_effort: true
+  assess_linked_issues: true
+  related_issues: true
+  related_prs: true
+  suggested_labels: false
+  suggested_reviewers: false
+  enable_prompt_for_ai_agents: true
+  # Fun features — keep CodeRabbit cheerful
+  poem: true
+  in_progress_fortune: true
+  commit_status: true
+  fail_commit_status: false
+  abort_on_close: true
+  auto_review:
+    enabled: true
+    drafts: false
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 8
+    base_branches:
+      - "main"
+      - "dev"
+    ignore_title_keywords:
+      - "WIP"
+      - "[WIP]"
+      - "RFC"
+      - "DO NOT REVIEW"
+    ignore_usernames:
+      - "dependabot[bot]"
+
+  slop_detection:
+    enabled: true
+    label: "needs-review"
+
+  pre_merge_checks:
+    title:
+      mode: "warning"
+      requirements: |
+        Use imperative mood, single concern, and keep titles under ~70 characters — match the style of existing history.
+        Examples: "Add Jellyfin template", "feat: add Xen Orchestra template with reverse proxy and WebSocket support", "docs: update TEMPLATE_GUIDE wording", "fix(wordpress): loosen admin-ajax CRS exclusion".
+        Put detail in the description, not the title.
+    description:
+      mode: "warning"
+    issue_assessment:
+      mode: "off"
+    docstrings:
+      mode: "off"
+
+  finishing_touches:
+    # No automated test harness exists; validation is manual. Do not auto-generate tests.
+    unit_tests:
+      enabled: false
+
+  path_filters:
+    - "**"
+    - "!**/node_modules/**"
+    - "!**/.venv/**"
+    - "!**/venv/**"
+    - "!**/.pytest_cache/**"
+    - "!**/__pycache__/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/*.min.js"
+    - "!**/*.svg"
+    - "!**/*.drawio"
+    - "!**/*.patch*"
+    - "!**/*.zip"
+    - "!**/*.tar.gz"
+    - "!assets/**"
+    - "!.claude/**"
+    - "!.gemini/**"
+
+  path_instructions:
+    - path: "templates/**/template.json"
+      instructions: |
+        `template.json` is the BunkerWeb template definition consumed by the configurator and the guided-import UI. Apply these rules:
+          - Required top-level fields: `id` (lowercase-kebab-case, matching the template directory name, treated as immutable once published), `name` (concise user-facing label). Optional: `settings` (object of BunkerWeb multisite settings), `configs` (array of relative paths), `steps` (ordered guided-import workflow).
+          - Two-space indentation, double-quoted keys and strings, no trailing commas. The file must parse with `jq . templates/<name>/template.json`.
+          - Setting keys must match BunkerWeb multisite setting names exactly (e.g. `SERVER_NAME`, `USE_REVERSE_PROXY`, `REVERSE_PROXY_HOST`, `MODSECURITY_CRS_PLUGINS`, `USE_LIMIT_REQ`, `LIMIT_REQ_RATE`, `WHITELIST_RDNS`). Flag typos, unknown keys, and values that violate documented types or ranges.
+          - Every path referenced from `configs` (top-level or inside a step) must resolve to a file that exists under the template directory. Flag missing files, paths that escape the template directory, or duplicate entries. Templates must be self-contained: never reference files outside their own `templates/<name>/` directory.
+          - Each `steps[].settings` entry must refer to a key that also exists in the top-level `settings` object — the UI surfaces the step by reading those keys. Flag orphan references.
+          - Templates must stay integration-agnostic. They work identically across Docker, Kubernetes, and Linux, so never introduce environment-specific assets (Dockerfiles, `docker-compose.yml`, Kubernetes manifests, Helm charts, systemd units) inside `templates/<name>/`, and never condition settings on the host integration.
+          - Templates must be app-specific, not generic hardening. BunkerWeb already ships built-in `low`/`medium`/`high` presets for generic defaults; a template in this repo should target a named upstream service and ship app-aware configs and guided `steps`. Push back on PRs that add a bare "hardening" template with no service focus and no meaningful step walkthrough.
+          - Security-sensitive settings deserve extra scrutiny:
+              - TLS: `AUTO_LETS_ENCRYPT`, `USE_LETS_ENCRYPT_STAGING`, `LETS_ENCRYPT_CHALLENGE`, `USE_CUSTOM_SSL`. Defaults should land on production-safe values (staging off, HTTP-01 or DNS-01 challenge reasonable, no hard-coded keys or cert data).
+              - Request filtering: `ALLOWED_METHODS`, `MAX_CLIENT_SIZE`, `USE_LIMIT_REQ`, `LIMIT_REQ_RATE`, `USE_LIMIT_CONN`. Do not loosen limits beyond what the upstream service genuinely requires, and justify any widening in the PR description.
+              - Allowlists: `USE_WHITELIST`, `WHITELIST_IP`, `WHITELIST_RDNS`, `WHITELIST_RDNS_GLOBAL`, `WHITELIST_ASN`. Never allowlist RFC1918, loopback, or `0.0.0.0/0`; keep RDNS lists to verifiable crawler domains.
+              - ModSecurity / CRS: `USE_MODSECURITY`, `USE_MODSECURITY_CRS`, `MODSECURITY_CRS_PLUGINS`. Do not disable ModSecurity or the CRS in a template; prefer CRS exclusion plugins over blanket disables.
+              - Reverse proxy: `REVERSE_PROXY_HOST` should be a documented placeholder or local-network hostname, never a public address or credential-carrying URL.
+          - Never commit real domains, credentials, API keys, tokens, or internal hostnames. Use obvious placeholders (`www.example.com`, `http://myservice`).
+          - When a setting is added, removed, renamed, or its default changes, require a matching update to the template `README.md`, `TEMPLATE_CATALOG.md` where relevant, and a `CHANGELOG.md` entry under `## Unreleased`.
+
+    - path: "templates/**/configs/**/*.conf"
+      instructions: |
+        These are NGINX and ModSecurity snippets loaded by BunkerWeb at runtime. They must be safe and minimal:
+          - ModSecurity / CRS tuning files (`*_false_positives.conf`): prefer targeted `ctl:ruleRemoveTargetById=` / `ctl:ruleRemoveById=` over `SecRuleRemoveById` with broad ranges. Every exclusion must have a short comment explaining the specific legitimate traffic it unblocks (endpoint, parameter, rule ID, reason). Do not disable whole paranoia levels or broad rule families.
+          - Rule IDs authored here must live in the user range (>= 9,000,000 for `SecAction` markers used by CRS plugins, or the custom range documented by the upstream CRS plugin being enabled).
+          - Do not set `SecRuleEngine Off` or `SecRequestBodyAccess Off` in a template config.
+          - NGINX fragments: avoid `if` inside `location` where a prefix match would do; never `proxy_pass` to an upstream constructed from a request variable (SSRF); do not strip security headers added by BunkerWeb core; do not lower TLS/SSL protocol or cipher strength.
+          - Every file referenced here must also be listed in the owning `template.json` `configs` array, and vice versa. Flag orphans in either direction.
+          - Add a short top-of-file comment describing the template the snippet belongs to and the upstream service version it was validated against.
+
+    - path: "templates/**/README.md"
+      instructions: |
+        Per-template README files exist to help users import and tune the template:
+          - State the target upstream service and minimum version validated (for example "Nextcloud 29+"), and call out any prerequisites on the upstream side (trusted proxies, headers, database).
+          - Document the distribution mode the template is aimed at (UI Raw import — recommended — and/or plugin bundle), mirroring the language in `TEMPLATE_GUIDE.md`.
+          - Explain non-obvious BunkerWeb settings defined in `template.json`, especially any that relax defaults, and say why.
+          - Provide the validation commands the author actually ran. The canonical NGINX snippet check is `nginx -t -c <(printf 'events{} http{ include templates/<name>/configs/<file>.conf; }')`; also suggest `jq . templates/<name>/template.json` for JSON sanity, and `docker compose config` or `kubectl apply --server-dry-run -f` only when the README genuinely walks the user through those integrations.
+          - Use British English, wrap commands in backticks, and keep lines to roughly 100 characters.
+          - Never include real credentials, real domains, or copy-pasted upstream licence text.
+
+    - path: "CHANGELOG.md"
+      instructions: |
+        `CHANGELOG.md` drives the pre-release notes generated by `.github/workflows/dev-template-prerelease.yml`, which reads the `## Unreleased` section verbatim. Enforce:
+          - Every user-visible PR adds a bullet under `## Unreleased` in the exact format `- [@github-handle] Short description of the change`, matching `CONTRIBUTING.md` and `TEMPLATE_GUIDE.md`.
+          - Do not reorder, rename, or remove existing release headings without a matching release workflow change.
+          - Do not move already-released entries back into `## Unreleased`.
+          - Flag PRs that touch `templates/`, `.github/workflows/`, or user-facing docs but skip the changelog entry.
+
+    - path: "**/*.md"
+      instructions: |
+        Documentation should be concise, accurate, and written in British English:
+          - Keep a sensible heading hierarchy and prefer concrete instructions over narrative.
+          - Commands go in backticks or fenced code blocks; keep lines under roughly 100 characters.
+          - Check that referenced paths, settings, workflows, and external links still match the current repository.
+          - When a PR changes behaviour, defaults, or packaging, require the matching doc update in the same PR.
+
+    - path: ".github/workflows/**/*.yml"
+      instructions: &github_actions_instructions |
+        GitHub Actions workflows must be reproducible and safe:
+          - Pin third-party actions by commit SHA, not floating tags. The existing workflows already follow this — do not regress to `@v1` / `@main`.
+          - Declare an explicit top-level `permissions:` block and keep it minimal by default; only `contents: write` where a release actually requires it.
+          - Be extremely careful with `pull_request_target`: do not combine untrusted PR code with repository secrets.
+          - Do not interpolate `${{ github.event.* }}` values directly inside `run:` scripts; assign them via `env:` first to reduce script-injection risk.
+          - Use `concurrency` intentionally: cancel superseded PR jobs, but never cancel release or tag-publishing jobs mid-flight (the dev pre-release flow force-moves the `dev` tag and must run to completion).
+          - Shell steps should set `set -euo pipefail` when using bash, quote variables, and avoid unsafe expansion of paths or archive contents.
+          - When touching the release flow, preserve the behaviour consumed by BunkerWeb clients: stable `dev` tag, deterministic archive name, pre-release flag, and `make_latest: false`.
+
+    - path: ".github/workflows/**/*.yaml"
+      instructions: *github_actions_instructions
+
+    - path: ".pre-commit-config.yaml"
+      instructions: |
+        Keep the pre-commit stack aligned with repository reality:
+          - Hook revisions must stay pinned immutably (commit SHA with a `# frozen:` comment, matching the existing style).
+          - `.prettierignore` and pre-commit `files`/`exclude` patterns should stay in sync with CodeRabbit's own path filters where practical.
+          - New hooks must not silently reformat or reject large swathes of historical content without an agreed migration plan, and must run cleanly against every existing `templates/*` directory.
+          - Do not weaken the Gitleaks or Codespell hooks; both exist to protect a public template catalogue.
+
+    - path: "**/*.yaml"
+      instructions: &yaml_instructions |
+        YAML files (CI, pre-commit, docs config) must be structured and reproducible:
+          - Use consistent indentation, stable key ordering where the project already has one, and avoid duplicate keys.
+          - Pin container images, dependency versions, and GitHub Actions rather than using `latest` or floating tags.
+          - Never commit secrets in plaintext; rely on repository secrets or placeholder examples.
+          - Flag unintentional multi-document streams in single-purpose files.
+
+    - path: "**/*.yml"
+      instructions: *yaml_instructions
+
+  tools:
+    github-checks:
+      enabled: true
+      timeout_ms: 120000
+    languagetool:
+      enabled: true
+      level: "default"
+    gitleaks:
+      enabled: true
+    yamllint:
+      enabled: true
+    actionlint:
+      enabled: true
+    shellcheck:
+      enabled: true
+    markdownlint:
+      enabled: true
+    checkov:
+      enabled: true
+    osvScanner:
+      enabled: true
+    dotenvLint:
+      enabled: true
+    # Not applicable to this repository — no Python, Lua, JS, HTML, CSS, or container images live here.
+    luacheck:
+      enabled: false
+    hadolint:
+      enabled: false
+    htmlhint:
+      enabled: false
+    flake8:
+      enabled: false
+    ruff:
+      enabled: false
+    eslint:
+      enabled: false
+    stylelint:
+      enabled: false
+    semgrep:
+      enabled: false
+    biome:
+      enabled: false
+
+chat:
+  auto_reply: true
