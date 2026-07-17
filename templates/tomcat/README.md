@@ -23,11 +23,8 @@ allow lists tuned for typical Java web applications.
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, click
-     **Create new template**, switch to **Raw** mode, paste the contents of
-     `template.json`, and save.
-   - *Plugin bundle*: copy `tomcat/` into the BunkerWeb plugin `templates/`
-     directory.
+   - Follow the repository's [installation guide](../../README.md#installing-templates)
+     for the web UI or plugin bundle method.
 2. **Assign the template** to the service that fronts Tomcat (`USE_TEMPLATE=tomcat`
    or pick it from the UI list).
 3. **Review TLS options** so `SERVER_NAME` and certificate automation match your

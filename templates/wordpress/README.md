@@ -18,9 +18,8 @@ Provision a curated BunkerWeb configuration for WordPress. This template ships s
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, click **Create new template**, switch to
-     **Raw** mode, paste the contents of `template.json`, and save.
-   - *Plugin bundle*: copy the entire `wordpress/` directory into your plugin’s `templates/` folder.
+   - Follow the repository's [installation guide](../../README.md#installing-templates) for the web UI or
+     plugin bundle method.
 2. **Assign the template** to your WordPress service via the easy-mode UI or by setting `USE_TEMPLATE=wordpress`.
 3. **Customize the settings** highlighted in the template steps (domains, upstream host, TLS options).
 4. **Reload the service** and verify WordPress loads through BunkerWeb.
@@ -31,7 +30,7 @@ Provision a curated BunkerWeb configuration for WordPress. This template ships s
 - Adjust `MAX_CLIENT_SIZE` if you need to support larger media uploads.
 - Tune `LIMIT_REQ_RATE` or change the protected `LIMIT_REQ_URL` (defaults to `/`) if you want to rate-limit only `wp-login.php` or `xmlrpc.php`.
 - Add or prune domains in `WHITELIST_RDNS` if you want to control which crawlers bypass security checks.
-- Disable the XML-RPC relaxations in `configs/modsec/wordpress_false_positives.conf` if your installation does not require XML-RPC.
+- Review and narrow the `admin-ajax` exclusions in `configs/modsec/wordpress_false_positives.conf` for your installation.
 
 ## Validation
 
