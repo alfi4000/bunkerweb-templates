@@ -1,6 +1,6 @@
 {
-  "id": "synapse-no-turn",
-  "name": "Synapse Matrix server without Turn, secure template with essential hardening defaults",
+  "id": "synapse",
+  "name": "Synapse Matrix homeserver secure template with essential hardening defaults",
   "settings": {
     "SERVER_NAME": "example.com",
     "AUTO_LETS_ENCRYPT": "yes",
@@ -33,15 +33,89 @@
     "LIMIT_REQ_URL": "/",
     "LIMIT_REQ_RATE": "10r/s",
     "INTERCEPTED_ERROR_CODES": "400 401 403 404 405 413 429 501 502 503 504",
-    "USE_WHITELIST": "yes",
+    "USE_WHITELIST": "no",
     "BAD_BEHAVIOR_STATUS_CODES": "405",
     "BAD_BEHAVIOR_THRESHOLD": "100",
     "WHITELIST_IP": "",
-    "WHITELIST_RDNS": ".google.com .googlebot.com .yandex.ru .yandex.net .yandex.com .search.msn.com .baidu.com .baidu.jp .crawl.yahoo.net .fwd.linkedin.com",
     "WHITELIST_RDNS_GLOBAL": "yes",
     "WHITELIST_ASN": "",
     "SERVE_FILES": "no",
-    "USE_CLIENT_CACHE": "n0",
+    "USE_CLIENT_CACHE": "no",
     "USE_GZIP": "yes",
-    "USE_BROTLI": "yes",
-  }
+    "USE_BROTLI": "yes"
+  },
+  "configs": ["server-http/well-known.conf"],
+  "steps": [
+    {
+      "title": "Web service - Front service",
+      "subtitle": "Point the template at the domain that hosts your Matrix homeserver.",
+      "settings": [
+        "SERVER_NAME",
+        "AUTO_LETS_ENCRYPT",
+        "USE_LETS_ENCRYPT_STAGING",
+        "USE_LETS_ENCRYPT_WILDCARD",
+        "LETS_ENCRYPT_CHALLENGE",
+        "LETS_ENCRYPT_DNS_PROVIDER",
+        "LETS_ENCRYPT_DNS_PROPAGATION",
+        "LETS_ENCRYPT_DNS_CREDENTIAL_ITEM",
+        "USE_CUSTOM_SSL",
+        "CUSTOM_SSL_CERT_PRIORITY",
+        "CUSTOM_SSL_CERT",
+        "CUSTOM_SSL_KEY",
+        "CUSTOM_SSL_CERT_DATA",
+        "CUSTOM_SSL_KEY_DATA"
+      ]
+    },
+    {
+      "title": "Web service - Upstream server",
+      "subtitle": "Direct the reverse proxy at your Synapse listener (default port 8008).",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "REVERSE_PROXY_HOST",
+        "REVERSE_PROXY_URL",
+        "REVERSE_PROXY_INTERCEPT_ERRORS",
+        "REVERSE_PROXY_KEEPALIVE",
+        "REVERSE_PROXY_HIDE_HEADERS",
+        "REVERSE_PROXY_CONNECT_TIMEOUT",
+        "REVERSE_PROXY_READ_TIMEOUT",
+        "REVERSE_PROXY_SEND_TIMEOUT"
+      ]
+    },
+    {
+      "title": "HTTP - Synapse specific settings",
+      "subtitle": "Tune HTTP limits for Matrix, including the 50m media upload size.",
+      "settings": [
+        "HTTP3",
+        "LISTEN_HTTP",
+        "MAX_CLIENT_SIZE",
+        "ALLOWED_METHODS",
+        "USE_LIMIT_REQ",
+        "LIMIT_REQ_URL",
+        "LIMIT_REQ_RATE",
+        "INTERCEPTED_ERROR_CODES"
+      ]
+    },
+    {
+      "title": "Security - Access whitelisting",
+      "subtitle": "Tune bad behavior detection and optional IP/ASN whitelisting (disabled by default for this API-only homeserver).",
+      "settings": [
+        "USE_WHITELIST",
+        "WHITELIST_IP",
+        "WHITELIST_RDNS_GLOBAL",
+        "WHITELIST_ASN",
+        "BAD_BEHAVIOR_STATUS_CODES",
+        "BAD_BEHAVIOR_THRESHOLD"
+      ]
+    },
+    {
+      "title": "Performance - Client optimization",
+      "subtitle": "Control caching and compression behaviour.",
+      "settings": ["USE_CLIENT_CACHE", "SERVE_FILES", "USE_GZIP", "USE_BROTLI"]
+    },
+    {
+      "title": "Matrix - Well-known delegation",
+      "subtitle": "Serve the .well-known client and server delegation. Replace the placeholder domain in well-known.conf with your Matrix hostname.",
+      "configs": ["server-http/well-known.conf"]
+    }
+  ]
+}

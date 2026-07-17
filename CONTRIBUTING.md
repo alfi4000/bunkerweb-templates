@@ -18,7 +18,7 @@ We follow the tone and values of the BunkerWeb community: be respectful, be incl
 5. **Test and lint** your contribution. Run `pre-commit run --all-files` and address any issues it reports. For templates, also validate configuration files where possible (e.g. `docker compose config`, `kubectl apply --server-dry-run`, schema validation).
 6. **Update the changelog**. Add a line under the `## Unreleased` section in `CHANGELOG.md` summarizing your change using the format `- [@github-handle] Short description of the change`.
 7. **Commit** with clear messages that describe the change and reference any related issues.
-8. **Open a Pull Request** against `main`:
+8. **Open a Pull Request** against `dev`:
    - Summarize the motivation and changes.
    - Highlight testing steps and expected outcomes.
    - Link issues or discussions that provide additional context.

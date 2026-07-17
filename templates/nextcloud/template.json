@@ -19,8 +19,9 @@
     "USE_REVERSE_PROXY": "yes",
     "REVERSE_PROXY_URL": "/",
     "REVERSE_PROXY_HOST": "http://nextcloud",
+    "REVERSE_PROXY_WS": "no",
     "MAX_CLIENT_SIZE": "10G",
-    "ALLOWED_METHODS": "GET|POST|HEAD|COPY|DELETE|LOCK|MKCOL|MOVE|PROPFIND|PROPPATCH|PUT|UNLOCK|OPTIONS|REPORT",
+    "ALLOWED_METHODS": "GET|POST|HEAD|COPY|DELETE|LOCK|MKCOL|MOVE|PROPFIND|PROPPATCH|PUT|UNLOCK|OPTIONS|REPORT|SEARCH|MKCALENDAR|ACL|PATCH",
     "USE_LIMIT_REQ": "yes",
     "LIMIT_REQ_URL_1": "/apps",
     "LIMIT_REQ_RATE_1": "5r/s",
@@ -28,6 +29,8 @@
     "LIMIT_REQ_RATE_2": "8r/s",
     "LIMIT_REQ_URL_3": "/core/preview",
     "LIMIT_REQ_RATE_3": "5r/s",
+    "LIMIT_REQ_URL_4": "/apps/mail",
+    "LIMIT_REQ_RATE_4": "40r/s",
     "USE_CLIENT_CACHE": "yes",
     "SERVE_FILES": "no",
     "USE_GZIP": "yes",
@@ -63,7 +66,8 @@
       "settings": [
         "USE_REVERSE_PROXY",
         "REVERSE_PROXY_HOST",
-        "REVERSE_PROXY_URL"
+        "REVERSE_PROXY_URL",
+        "REVERSE_PROXY_WS"
       ]
     },
     {
@@ -80,6 +84,11 @@
         "LIMIT_REQ_URL_3",
         "LIMIT_REQ_RATE_3"
       ]
+    },
+    {
+      "title": "HTTP - Mail",
+      "subtitle": "Tune rate limiting for Nextcloud Mail if used.",
+      "settings": ["LIMIT_REQ_URL_4", "LIMIT_REQ_RATE_4"]
     },
     {
       "title": "Performance - Client optimization",

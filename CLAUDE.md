@@ -58,7 +58,7 @@ Use `templates/wordpress/` as the reference template for structure, tone, and st
 
 - Main branch: `main` (releases), development branch: `dev` (auto pre-releases)
 - Feature branches: `feature/<name>`, bugfix branches: `bugfix/<name>`
-- PRs target `main` with validation notes and linked issues
+- Follow `CONTRIBUTING.md` for the current PR target branch; include validation notes and linked issues
 - Pre-commit suite must pass before opening PRs
 
 ## External References
