@@ -24,11 +24,8 @@ reliable.
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, choose
-     **Create new template**, switch to **Raw** mode, paste the contents of
-     `template.json`, and save.
-   - *Plugin bundle*: copy `drupal/` into the `templates/` directory of your
-     BunkerWeb plugin bundle.
+   - Follow the repository's [installation guide](../../README.md#installing-templates)
+     for the web UI or plugin bundle method.
 2. **Assign the template** to the service that fronts Drupal (`USE_TEMPLATE=drupal`
    via environment variables or pick it in the UI).
 3. **Review TLS automation** and ensure `SERVER_NAME` and certificate options

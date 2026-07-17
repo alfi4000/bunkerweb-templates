@@ -18,9 +18,8 @@ Provision a curated BunkerWeb configuration for WordPress. This template ships s
 ## Setup
 
 1. **Import the template**
-   - *UI import (recommended)*: open the BunkerWeb `Templates` page, click **Create new template**, switch to
-     **Raw** mode, paste the contents of `template.json`, and save.
-   - *Plugin bundle*: copy the entire `wordpress/` directory into your plugin’s `templates/` folder.
+   - Follow the repository's [installation guide](../../README.md#installing-templates) for the web UI or
+     plugin bundle method.
 2. **Assign the template** to your WordPress service via the easy-mode UI or by setting `USE_TEMPLATE=wordpress`.
 3. **Customize the settings** highlighted in the template steps (domains, upstream host, TLS options).
 4. **Reload the service** and verify WordPress loads through BunkerWeb.

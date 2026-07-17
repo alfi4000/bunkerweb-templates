@@ -39,7 +39,7 @@ This repository packages those JSON definitions alongside their configuration sn
 - [Highlights](#highlights)
 - [How Templates Work](#how-templates-work)
 - [Table of Contents](#table-of-contents)
-- [Getting Started](#getting-started)
+- [Installing Templates](#installing-templates)
 - [Available Templates](#available-templates)
 - [Template Anatomy](#template-anatomy)
 - [Repository Layout](#repository-layout)
@@ -48,13 +48,82 @@ This repository packages those JSON definitions alongside their configuration sn
 - [Maintainers](#maintainers)
 - [License](#license)
 
-## Getting Started
+## Installing Templates
 
-1. **Browse templates:** Explore `templates/`; each directory targets a specific service or use case and includes its required assets.
-2. **Review the JSON definition:** Inspect `<template>/template.json` to understand the settings, configs, and optional steps it provides.
-3. **Import the template:** Either drop the directory into a plugin’s `templates/` folder or upload the JSON bundle from the BunkerWeb web UI on the `Templates` page, then reference it with the `USE_TEMPLATE` setting or the easy-mode workflow.
-4. **Adjust to taste:** Edit the JSON and accompanying configuration snippets so the template reflects your infrastructure.
-5. **Share feedback:** Open an issue or pull request if you find improvements, new services, or fixes worth sharing.
+The **web UI is recommended** for most users. Use the plugin method when you
+already manage BunkerWeb plugins as files or need repeatable, automated
+deployments.
+
+First, download and extract the
+[latest release archive](https://github.com/bunkerity/bunkerweb-templates/releases/latest),
+or clone this repository. Choose the service directory you want to install and
+read its README for prerequisites and service-specific settings. Below,
+`<template-directory>` means that extracted service directory, such as
+`wordpress/` in the release archive or `templates/wordpress/` in a repository
+clone.
+
+### Web UI (Recommended)
+
+1. Sign in to the BunkerWeb web UI with an account that can edit the
+   configuration.
+2. Open **Templates**, select **Create new template**, and switch to **Raw**
+   mode.
+3. Select **Upload template JSON** and choose
+   `<template-directory>/template.json`. You can instead paste the file's
+   contents into the JSON editor. Confirm **Replace template** if prompted.
+4. If the **Missing Custom Configs** dialog appears, the template needs its
+   accompanying NGINX configuration files:
+   - Select **Browse Files**, or drag files into the upload area.
+   - Upload every listed file from `<template-directory>/configs/` and its
+     subdirectories. Filenames must match the list; selecting the directories
+     themselves is not required.
+   - Wait until every item is marked **Uploaded**, then select **Done**.
+5. Review the imported JSON and configs, then select **Save**. Templates without
+   custom configs skip the previous dialog.
+6. Add or edit a service in **Easy** mode, choose the new template, and review
+   each guided step. Replace example domains, upstream URLs, and other defaults
+   with values for your deployment before saving the service.
+
+The web UI stores the imported template and config contents in BunkerWeb's
+database. The local files are no longer needed after a successful import. For
+non-UI configuration, apply the same template with `USE_TEMPLATE=<name>`, where
+`<name>` is the template ID shown in the UI.
+
+### Plugin (Managed Deployments)
+
+Template directories from this repository are **not standalone plugins**. Add
+the selected template to an existing external plugin, or create a plugin with a
+`plugin.json` file by following the
+[BunkerWeb plugin documentation](https://docs.bunkerweb.io/latest/plugins/#how-to-use-a-plugin).
+
+BunkerWeb uses the JSON filename as the template ID, so the repository layout
+must be rearranged inside the plugin:
+
+1. Copy `<template-directory>/template.json` to
+   `<plugin>/templates/<name>.json`.
+2. If the template contains a `configs/` directory, copy it to
+   `<plugin>/templates/<name>/configs/`. Preserve every config-type
+   subdirectory, such as `modsec/` or `server-http/`.
+3. Confirm the resulting plugin layout. WordPress, for example, must look like
+   this:
+
+```text
+plugins/
+└── example-plugin/
+    ├── plugin.json
+    └── templates/
+        ├── wordpress.json
+        └── wordpress/
+            └── configs/
+                └── modsec/
+                    └── wordpress_false_positives.conf
+```
+
+4. Install or reload the plugin using the procedure for your BunkerWeb
+   integration. The scheduler loads the template from the plugin.
+5. Select the template when adding or editing a service in easy mode, or set
+   `USE_TEMPLATE=<name>`. For the example above, use
+   `USE_TEMPLATE=wordpress` because the file is named `wordpress.json`.
 
 ## Available Templates
 
@@ -81,7 +150,7 @@ templates/
 
 ## Template Anatomy
 
-Every template directory mirrors the structure that BunkerWeb expects when loading custom templates from a plugin:
+Every repository template keeps its definition and supporting assets together:
 
 - `template.json` describes the template `id`, user-facing `name`, and optional `settings`, `configs`, and `steps`.
 - `configs/` contains any NGINX fragments referenced in the JSON file.
@@ -126,21 +195,19 @@ A minimal `template.json` might look like:
 }
 ```
 
-And its directory can be embedded in a plugin like:
+When installed in a plugin, its files use this layout:
 
 ```text
 plugins/
 └── example-plugin/
     ├── plugin.json
     └── templates/
+        ├── wordpress.json
         └── wordpress/
-            ├── template.json
             └── configs/
                 └── modsec/
                     └── wordpress_false_positives.conf
 ```
-
-Alternatively, you can zip or upload the directory contents directly from the BunkerWeb web UI (`Templates` page) to make it available without packaging a plugin.
 
 ## Repository Layout
 
