@@ -41,7 +41,7 @@ Use `templates/wordpress/` as the reference template for structure, tone, and st
 
 **CI/CD** — two GitHub Actions workflows:
 
-- `dev-template-prerelease.yml`: auto-packages templates on push to `dev` branch
+- `dev-template-prerelease.yml`: workflow dispatch for dev pre-releases
 - `manual-template-release.yml`: workflow dispatch for production releases
 
 ## Conventions
@@ -56,7 +56,7 @@ Use `templates/wordpress/` as the reference template for structure, tone, and st
 
 ## Git Workflow
 
-- Main branch: `main` (releases), development branch: `dev` (auto pre-releases)
+- Main branch: `main` (releases), development branch: `dev` (manual pre-releases)
 - Feature branches: `feature/<name>`, bugfix branches: `bugfix/<name>`
 - Follow `CONTRIBUTING.md` for the current PR target branch; include validation notes and linked issues
 - Pre-commit suite must pass before opening PRs

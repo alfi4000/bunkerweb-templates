@@ -1,9 +1,7 @@
 name: Dev Template Pre-release
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_dispatch:
 
 jobs:
   package-and-publish:
