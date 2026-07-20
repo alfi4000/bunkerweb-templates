@@ -5,6 +5,16 @@ manual releases can pull details straight from this file.
 
 ## Unreleased
 
+## Templates release v0.5 - 2026-07-20
+
+- [@YouKyi] Fix ModSecurity rule syntax and clean up WordPress configuration.
+- [@palmcoasty] Add Tuwunel (Matrix homeserver) template with reverse proxy, rate limiting, and .well-known delegation.
+- [@palmcoasty] Add Synapse (Matrix homeserver) template with reverse proxy, well-known delegation, and upload limits.
+- [@palmcoasty] Document that the WordPress REST API PUT/DELETE methods are disabled by default and how to enable them via ALLOWED_METHODS.
+- [@palmcoasty] Add Pi-hole template with reverse proxy and ModSecurity tuning for the admin UI.
+- [@TheophileDiot] Clarify template installation through the web UI and plugin bundles, and centralize setup guidance in the root README.
+- [@TheophileDiot] Expand the Nextcloud template `ALLOWED_METHODS` with `SEARCH`, `MKCALENDAR`, `ACL`, and `PATCH` to cover WebDAV search, CalDAV, DAVACL, and chunked upload v2. Align `tx.allowed_methods` in `configs/modsec/nextcloud_false_positives.conf` with the template definition (also restores the missing `REPORT` verb).
+
 ## Templates release v0.4 - 2026-04-24
 
 - [@TheophileDiot] Add Xen Orchestra template with reverse proxy, WebSocket, and rate limiting defaults.

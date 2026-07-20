@@ -16,7 +16,7 @@ code_generation:
 
 reviews:
   profile: "assertive"
-  request_changes_workflow: false
+  request_changes_workflow: true
   high_level_summary: true
   high_level_summary_in_walkthrough: true
   high_level_summary_instructions: |
@@ -106,7 +106,7 @@ reviews:
           - Required top-level fields: `id` (lowercase-kebab-case, matching the template directory name, treated as immutable once published), `name` (concise user-facing label). Optional: `settings` (object of BunkerWeb multisite settings), `configs` (array of relative paths), `steps` (ordered guided-import workflow).
           - Two-space indentation, double-quoted keys and strings, no trailing commas. The file must parse with `jq . templates/<name>/template.json`.
           - Setting keys must match BunkerWeb multisite setting names exactly (e.g. `SERVER_NAME`, `USE_REVERSE_PROXY`, `REVERSE_PROXY_HOST`, `MODSECURITY_CRS_PLUGINS`, `USE_LIMIT_REQ`, `LIMIT_REQ_RATE`, `WHITELIST_RDNS`). Flag typos, unknown keys, and values that violate documented types or ranges.
-          - Every path referenced from `configs` (top-level or inside a step) must resolve to a file that exists under the template directory. Flag missing files, paths that escape the template directory, or duplicate entries. Templates must be self-contained: never reference files outside their own `templates/<name>/` directory.
+          - Every path referenced from `configs` (top-level or inside a step) is relative to the template's `configs/` directory and formatted `<type>/<file>.conf`, where `<type>` is a BunkerWeb config type (`modsec`, `modsec-crs`, `server-http`, ...). BunkerWeb prepends `templates/<id>/configs/` itself, so entries must never start with `configs/`. Each entry must resolve to a file that exists under the template directory. Flag missing files, paths that escape the template directory, or duplicate entries. Templates must be self-contained: never reference files outside their own `templates/<name>/` directory.
           - Each `steps[].settings` entry must refer to a key that also exists in the top-level `settings` object — the UI surfaces the step by reading those keys. Flag orphan references.
           - Templates must stay integration-agnostic. They work identically across Docker, Kubernetes, and Linux, so never introduce environment-specific assets (Dockerfiles, `docker-compose.yml`, Kubernetes manifests, Helm charts, systemd units) inside `templates/<name>/`, and never condition settings on the host integration.
           - Templates must be app-specific, not generic hardening. BunkerWeb already ships built-in `low`/`medium`/`high` presets for generic defaults; a template in this repo should target a named upstream service and ship app-aware configs and guided `steps`. Push back on PRs that add a bare "hardening" template with no service focus and no meaningful step walkthrough.
@@ -123,7 +123,7 @@ reviews:
       instructions: |
         These are NGINX and ModSecurity snippets loaded by BunkerWeb at runtime. They must be safe and minimal:
           - ModSecurity / CRS tuning files (`*_false_positives.conf`): prefer targeted `ctl:ruleRemoveTargetById=` / `ctl:ruleRemoveById=` over `SecRuleRemoveById` with broad ranges. Every exclusion must have a short comment explaining the specific legitimate traffic it unblocks (endpoint, parameter, rule ID, reason). Do not disable whole paranoia levels or broad rule families.
-          - Rule IDs authored here must live in the user range (>= 9,000,000 for `SecAction` markers used by CRS plugins, or the custom range documented by the upstream CRS plugin being enabled).
+          - Rule IDs authored here must live in the ModSecurity local-use range (1-99,999), one small block per template (e.g. WordPress 10000-10099). Never use 900,000-999,999 or >= 9,000,000: those are OWASP CRS core and CRS plugin ranges, and shipped CRS files already define IDs there (e.g. CRS v3 cPanel exclusions use 9005000/9005001), so reusing them is a fatal duplicate-id error that stops NGINX from loading.
           - Do not set `SecRuleEngine Off` or `SecRequestBodyAccess Off` in a template config.
           - NGINX fragments: avoid `if` inside `location` where a prefix match would do; never `proxy_pass` to an upstream constructed from a request variable (SSRF); do not strip security headers added by BunkerWeb core; do not lower TLS/SSL protocol or cipher strength.
           - Every file referenced here must also be listed in the owning `template.json` `configs` array, and vice versa. Flag orphans in either direction.
