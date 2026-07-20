@@ -4,6 +4,16 @@ This template reverse-proxies the Pi-hole **web admin UI and REST API** through
 BunkerWeb. Pi-hole's DNS service is out of scope: keep serving DNS directly from
 Pi-hole on port 53 and only front the HTTP interface with BunkerWeb.
 
+## Setup
+
+1. Follow the repository's [installation guide](../../README.md#installing-templates)
+   for the web UI or plugin bundle method.
+2. Assign the template to the Pi-hole service (`USE_TEMPLATE=pi-hole` or select
+   it in the easy-mode UI).
+3. Replace the example domain and upstream with your Pi-hole deployment, then
+   review the real-IP settings described below.
+4. Reload BunkerWeb and verify the admin UI and REST API through the proxy.
+
 ## Security tuning notes
 
 This template deliberately relaxes a few defaults so a self-hosted Pi-hole admin
@@ -69,3 +79,9 @@ REVERSE_PROXY_HIDE_HEADERS_1=
 REVERSE_PROXY_CONNECT_TIMEOUT_1=30s
 REVERSE_PROXY_READ_TIMEOUT_1=90s
 ```
+
+## Validation
+
+- Run `jq . template.json` to confirm the template definition is valid JSON.
+- Sign in to the admin UI and exercise its API-backed dashboard through
+  BunkerWeb to confirm routing, client IP attribution, and rate limits.

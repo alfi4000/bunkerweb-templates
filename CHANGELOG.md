@@ -7,6 +7,7 @@ manual releases can pull details straight from this file.
 
 ## Templates release v0.5 - 2026-07-20
 
+- [@TheophileDiot] Refresh repository and wiki documentation, centralize volatile guidance, and align contribution and plugin instructions.
 - [@YouKyi] Fix ModSecurity rule syntax and clean up WordPress configuration.
 - [@palmcoasty] Add Tuwunel (Matrix homeserver) template with reverse proxy, rate limiting, and .well-known delegation.
 - [@palmcoasty] Add Synapse (Matrix homeserver) template with reverse proxy, well-known delegation, and upload limits.

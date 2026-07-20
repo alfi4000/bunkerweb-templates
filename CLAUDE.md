@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Community-curated collection of ready-to-import BunkerWeb security templates for popular services (WordPress, Drupal, Nextcloud, Jellyfin, Tomcat, NetBird). Each template bundles reverse proxy, TLS, rate limiting, and ModSecurity configurations. GPL-3.0 licensed.
+Community-curated collection of ready-to-import BunkerWeb security templates for popular services. The current catalog lives in `README.md`; templates bundle service-specific settings and optional NGINX configurations. GPL-3.0 licensed.
 
 ## Development Commands
 
@@ -34,7 +34,7 @@ templates/<service-name>/
 - `id`: lowercase hyphenated identifier
 - `name`: user-facing label
 - `settings`: BunkerWeb multisite settings as key-value pairs (keys must match BunkerWeb setting names exactly)
-- `configs`: array of relative paths to NGINX config files
+- `configs`: array of paths relative to the template's `configs/` directory
 - `steps`: ordered workflow steps with `title`, `subtitle`, `settings`, and `configs` for guided UI import
 
 Use `templates/wordpress/` as the reference template for structure, tone, and step organization.
@@ -51,7 +51,7 @@ Use `templates/wordpress/` as the reference template for structure, tone, and st
 - Commits: imperative mood ("Add Jellyfin template"), single concern per commit
 - Changelog: all changes go under `## Unreleased` in `CHANGELOG.md` as `- [@github-handle] Summary`
 - Config file naming: `<service>_false_positives.conf` for ModSecurity exclusion rules
-- All config paths in `template.json` are relative to the template root; referenced files must exist in-repo
+- All config paths in `template.json` are relative to the template's `configs/` directory; referenced files must exist in-repo
 - NGINX snippets should include comments when relaxing security defaults
 
 ## Git Workflow
