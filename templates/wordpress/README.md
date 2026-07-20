@@ -46,7 +46,7 @@ Updated (`PUT`/`DELETE` allowed):
 - Adjust `MAX_CLIENT_SIZE` if you need to support larger media uploads.
 - Tune `LIMIT_REQ_RATE` or change the protected `LIMIT_REQ_URL` (defaults to `/`) if you want to rate-limit only `wp-login.php` or `xmlrpc.php`.
 - Add or prune domains in `WHITELIST_RDNS` if you want to control which crawlers bypass security checks.
-- Disable the XML-RPC relaxations in `configs/modsec/wordpress_false_positives.conf` if your installation does not require XML-RPC.
+- Review and narrow the `admin-ajax` exclusions in `configs/modsec/wordpress_false_positives.conf` for your installation.
 
 ## Validation
 
