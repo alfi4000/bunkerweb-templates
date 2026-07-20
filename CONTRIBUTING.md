@@ -29,10 +29,10 @@ We follow the tone and values of the BunkerWeb community: be respectful, be incl
 
 To keep the templates repository tidy and easy to navigate, please align with these conventions:
 
-- **Naming**: Use lowercase-kebab-case for directories (e.g. `wordpress`, `plex`, `nextcloud-hardening`). Prefer descriptive names that reflect the service or goal.
+- **Naming**: Use lowercase-kebab-case for directories (e.g. `wordpress`, `synapse`, `nextcloud-hardening`). Prefer descriptive names that reflect the service or goal.
 - **Folder structure**: Place template assets inside `templates/<template-name>/`. Avoid adding extra environment subdirectories; each template stands alone. At minimum, include a `template.json` that follows the BunkerWeb schema.
-- **Template file**: `template.json` must define a unique template `id`, a user-facing `name`, and any `settings`, `configs`, or `steps` it relies on. Paths inside `configs` should resolve relative to the template directory.
-- **Documentation**: Add a `README.md` or short `NOTES.md` when additional guidance helps users customize the template. Mention whether the template is meant for UI import via Raw mode (recommended), plugin distribution, or both.
+- **Template file**: `template.json` must define a unique template `id`, a user-facing `name`, and any `settings`, `configs`, or `steps` it relies on. Config paths should resolve relative to the template's `configs/` directory.
+- **Documentation**: Add a `README.md` or short `NOTES.md` when additional guidance helps users customize the template. Link to the root [installation guide](README.md#installing-templates) instead of duplicating UI or plugin instructions.
 - **Examples**: When relevant, include sample configuration fragments under `configs/` and keep them referenced inside `template.json`.
 
 Refer to [TEMPLATE_GUIDE.md](TEMPLATE_GUIDE.md) for detailed expectations and examples.
@@ -52,7 +52,7 @@ Before submitting, double-check the following:
 - [ ] My branch builds or validates locally (where applicable).
 - [ ] The template follows the documented folder structure and naming conventions.
 - [ ] `template.json` is valid and references only files included in the template directory.
-- [ ] Template README (if provided) explains prerequisites, setup steps, and how to import the template (UI Raw import, recommended, vs. plugin bundle).
+- [ ] Template README (if provided) explains prerequisites and service-specific setup, and links to the root installation guide.
 - [ ] I updated or added tests, examples, or documentation as needed.
 - [ ] I added or updated an entry in `CHANGELOG.md` under `## Unreleased` using the format `- [@github-handle] Summary of the change`.
 - [ ] I confirmed that all files include the necessary license headers if required.

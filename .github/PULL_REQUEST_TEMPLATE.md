@@ -20,6 +20,7 @@
 - [ ] I installed the pre-commit hooks and ran `pre-commit run --all-files`.
 - [ ] I described the service or scenario this change targets.
 - [ ] `template.json` references only files shipped in the same template directory.
-- [ ] Template docs note how to import it (plugin bundle and/or web UI upload).
+- [ ] Template docs cover service-specific setup and link to the root installation guide.
 - [ ] I updated configs, screenshots, or notes impacted by this change.
+- [ ] I added an attributed entry under `## Unreleased` in `CHANGELOG.md`.
 - [ ] I linked related issues or discussions and added context for reviewers.

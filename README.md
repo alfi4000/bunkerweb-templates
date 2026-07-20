@@ -14,12 +14,12 @@
 
 > Ready-to-run BunkerWeb configurations for popular services, fully editable to fit your stack.
 
-The **bunkerweb-templates** repository collects community-maintained templates that deliver a working [BunkerWeb](https://www.bunkerweb.io) configuration for well-known services such as WordPress, Plex, Nextcloud, or self-hosted dashboards. Each template mirrors BunkerWeb’s template specification, giving you a safe baseline that you can extend or reshape for your environment.
+The **bunkerweb-templates** repository collects community-maintained templates that deliver a working [BunkerWeb](https://www.bunkerweb.io) configuration for well-known services such as WordPress, Nextcloud, and Matrix homeservers. Each template mirrors BunkerWeb’s template specification, giving you a safe baseline that you can extend or reshape for your environment.
 
 All templates and documentation in this repository are released under the [GNU General Public License v3.0](LICENSE), in line with the main BunkerWeb project.
 
 ## Highlights
-- **Service-first library:** Templates target specific apps (e.g. WordPress, Plex) so you can jump straight to a functional setup.
+- **Service-first library:** Templates target specific apps (e.g. WordPress and Nextcloud) so you can jump straight to a functional setup.
 - **Self-contained assets:** Every entry under `templates/<name>/` bundles the JSON definition and referenced configs.
 - **Editable by design:** Settings, configs, and steps follow BunkerWeb’s template spec, making tweaks straightforward.
 - **Built for iteration:** Contributor workflows, style guides, and review checklists keep the hub growing sustainably.
@@ -236,6 +236,7 @@ Questions or ideas? Join the conversation with fellow BunkerWeb maintainers and 
 
 - Discord: [discord.gg/YEdMKqztMZ](https://discord.gg/YEdMKqztMZ)
 - GitHub Issues: Use the issue tracker to report bugs or request new templates.
+- Wiki: Browse the [project wiki](https://github.com/bunkerity/bunkerweb-templates/wiki) for concise navigation and troubleshooting.
 - Code of Conduct: Review our [community guidelines](CODE_OF_CONDUCT.md) before engaging.
 
 ## Maintainers

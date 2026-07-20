@@ -10,7 +10,7 @@ Each template lives under `templates/<template-name>/` and should contain:
 - `configs/`: Optional directory holding NGINX fragments referenced in `template.json`.
 - Additional assets: Optional files such as helper scripts or a short `README.md` to provide service-specific notes.
 
-Name templates descriptively (for example `wordpress`, `plex`, `nextcloud`, `base-hardening`). Because templates behave the same across Docker, Kubernetes, bare metal, and other integrations, keep everything directly under `templates/` instead of nesting by environment.
+Name templates descriptively (for example `wordpress`, `nextcloud`, `synapse`, `base-hardening`). Because templates behave the same across Docker, Kubernetes, bare metal, and other integrations, keep everything directly under `templates/` instead of nesting by environment.
 
 > ℹ️ For a deeper explanation of how BunkerWeb consumes templates (including the built-in `low`, `medium`, and `high` presets), see the [official templates concept documentation](https://docs.bunkerweb.io/latest/concepts/#templates).
 
@@ -23,7 +23,7 @@ Every `template.json` must follow the structure expected by BunkerWeb:
 | `id`       | string | Yes      | Stable identifier for the template; keep it unique and aligned with the directory name.             |
 | `name`     | string | Yes      | User-facing label shown in the UI; keep it concise and descriptive.                                  |
 | `settings` | object | No       | Key/value pairs of multisite settings that override defaults when the template is applied.           |
-| `configs`  | array  | No       | Relative paths (inside the template folder) to NGINX configuration snippets that should be included. |
+| `configs`  | array  | No       | Paths relative to `configs/` for NGINX configuration snippets that should be included.                |
 | `steps`    | array  | No       | Ordered steps that group related settings and configs for easy-mode guidance.                        |
 
 Example:
@@ -73,13 +73,13 @@ Example:
 
 #### Settings
 
-- Only multisite settings are supported. Use the keys exactly as BunkerWeb expects them (e.g. `MULTISITE_DOMAIN`, `PROXY_CACHE_ENABLE`).
+- Only multisite settings are supported. Use the keys exactly as BunkerWeb expects them (e.g. `SERVER_NAME`, `USE_PROXY_CACHE`).
 - Provide sensible defaults, knowing that users can still adjust them after importing the template.
 
 #### Configs
 
-- Point to files located within the template directory (for example `modsec/false_positives.conf`).
-- Organize configuration snippets under subfolders such as `modsec/` or `addons/` if it adds clarity.
+- Point to files relative to the template's `configs/` directory (for example `modsec/false_positives.conf`).
+- Organize snippets under a supported BunkerWeb configuration type such as `modsec/`, `modsec-crs/`, or `server-http/`.
 
 #### Steps
 
@@ -97,12 +97,12 @@ While not required by BunkerWeb, consider adding:
 
 ### Distribution options
 
-You can deliver templates in two ways:
+Use the repository's [installation guide](README.md#installing-templates) for both supported delivery methods:
 
-1. **UI Raw import (recommended)** – From the BunkerWeb web UI, open the `Templates` page, click **Create new template**, switch to **Raw** mode, paste the contents of `template.json`, and add any referenced config files using the in-browser editor before saving. This is the fastest way to test or share a template without packaging a plugin.
-2. **Plugin bundle** – Place the template directory inside a plugin’s `templates/` folder (as shown above). When the plugin is installed, the template becomes available automatically.
+1. **Web UI Raw import (recommended)** – Upload or paste `template.json`, upload every missing custom config when prompted, save, then select the template for a service.
+2. **Plugin bundle** – Copy `template.json` to `<plugin>/templates/<name>.json` and copy `configs/` to `<plugin>/templates/<name>/configs/` before installing or reloading the plugin.
 
-Regardless of the delivery method, keep the folder layout identical so users can switch between approaches effortlessly.
+The repository and plugin layouts differ, so preserve the structure documented in the installation guide rather than copying the source directory unchanged.
 
 For deeper background on BunkerWeb concepts referenced in this guide, see the official docs:
 
@@ -127,7 +127,6 @@ For deeper background on BunkerWeb concepts referenced in this guide, see the of
 - Keep secrets and credentials out of the repository. Use placeholders and explain where real values belong.
 - Prefer declarative configuration over shell scripts; if a script is required, explain why in the template README.
 - Log every change in `CHANGELOG.md` by adding a bullet under `## Unreleased` using the format `- [@github-handle] What changed`. This keeps manual releases accurate and makes it easy to track ownership.
-- When updating an existing template, note the review date or version in the template README so users see it is maintained.
 
 ## Licensing Reminder
 
