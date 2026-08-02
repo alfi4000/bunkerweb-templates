@@ -1,6 +1,6 @@
 {
   "id": "directus",
-  "name": "Directus",
+  "name": "Directus secure template for the open source project called Directus no-code-friendly platform for turning an existing SQL database into APIs and an admin app.",
   "settings": {
     "IS_DRAFT": "no",
     "SERVER_NAME": "example.com",
