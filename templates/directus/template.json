@@ -1,0 +1,115 @@
+{
+  "id": "directus",
+  "name": "Directus",
+  "settings": {
+    "IS_DRAFT": "no",
+    "SERVER_NAME": "example.com",
+    "BAD_BEHAVIOR_THRESHOLD": "20",
+    "CLIENT_CACHE_ETAG": "no",
+    "USE_CORS": "yes",
+    "CORS_ALLOW_METHODS": "GET, POST, HEAD, PUT, DELETE, PATCH, OPTIONS",
+    "CORS_ALLOW_HEADERS": "Content-Type,Authorization,X-Requested-With,Accept,Origin,Cache-Control",
+    "CORS_ALLOW_CREDENTIALS": "yes",
+    "USE_CROWDSEC": "yes",
+    "INTERCEPTED_ERROR_CODES": "404 405 413 429 500 501 502 503 504",
+    "GZIP_PROXIED": "expired no-cache no-store private auth",
+    "KEEP_UPSTREAM_HEADERS": "Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy Access-Control-Allow-Origin Access-Control-Allow-Credentials Access-Control-Allow-Headers Access-Control-Allow-Methods Access-Control-Expose-Headers Access-Control-Max-Age",
+    "CONTENT_SECURITY_POLICY_REPORT_ONLY": "yes",
+    "AUTO_LETS_ENCRYPT": "yes",
+    "EMAIL_LETS_ENCRYPT": "registration@example.com",
+    "LIMIT_CONN_MAX_HTTP1": "50",
+    "LIMIT_CONN_MAX_HTTP2": "500",
+    "LIMIT_CONN_MAX_HTTP3": "500",
+    "LIMIT_REQ_RATE": "25r/s",
+    "ALLOWED_METHODS": "GET|POST|HEAD|PUT|DELETE|PATCH|OPTIONS",
+    "MAX_CLIENT_SIZE": "1024m",
+    "SERVE_FILES": "no",
+    "MODSECURITY_SEC_RULE_ENGINE": "DetectionOnly",
+    "USE_REVERSE_PROXY": "yes",
+    "REVERSE_PROXY_INTERCEPT_ERRORS": "no",
+    "REVERSE_PROXY_HOST": "http://ip-address:8055",
+    "REVERSE_PROXY_WS": "yes",
+    "REVERSE_PROXY_BUFFERING": "no",
+    "REVERSE_PROXY_REQUEST_BUFFERING": "no",
+    "REVERSE_PROXY_READ_TIMEOUT": "3600s",
+    "REVERSE_PROXY_SEND_TIMEOUT": "3600s",
+    "USE_ROBOTSTXT": "yes"
+  },
+  "configs": [],
+  "steps": [
+    {
+      "title": "SSL / Let's Encrypt",
+      "subtitle": "Configure ssl / let's encrypt settings.",
+      "settings": [
+        "AUTO_LETS_ENCRYPT",
+        "EMAIL_LETS_ENCRYPT"
+      ]
+    },
+    {
+      "title": "Reverse Proxy",
+      "subtitle": "Configure reverse proxy settings.",
+      "settings": [
+        "USE_REVERSE_PROXY",
+        "REVERSE_PROXY_INTERCEPT_ERRORS",
+        "REVERSE_PROXY_HOST",
+        "REVERSE_PROXY_WS",
+        "REVERSE_PROXY_BUFFERING",
+        "REVERSE_PROXY_REQUEST_BUFFERING",
+        "REVERSE_PROXY_READ_TIMEOUT",
+        "REVERSE_PROXY_SEND_TIMEOUT"
+      ]
+    },
+    {
+      "title": "Rate Limiting",
+      "subtitle": "Configure rate limiting settings.",
+      "settings": [
+        "LIMIT_CONN_MAX_HTTP1",
+        "LIMIT_CONN_MAX_HTTP2",
+        "LIMIT_CONN_MAX_HTTP3",
+        "LIMIT_REQ_RATE"
+      ]
+    },
+    {
+      "title": "Security",
+      "subtitle": "Configure security settings.",
+      "settings": [
+        "BAD_BEHAVIOR_THRESHOLD",
+        "MODSECURITY_SEC_RULE_ENGINE"
+      ]
+    },
+    {
+      "title": "Performance",
+      "subtitle": "Configure performance settings.",
+      "settings": [
+        "CLIENT_CACHE_ETAG",
+        "GZIP_PROXIED",
+        "MAX_CLIENT_SIZE",
+        "SERVE_FILES"
+      ]
+    },
+    {
+      "title": "Server / Core",
+      "subtitle": "Configure server / core settings.",
+      "settings": [
+        "IS_DRAFT",
+        "SERVER_NAME",
+        "INTERCEPTED_ERROR_CODES",
+        "ALLOWED_METHODS"
+      ]
+    },
+    {
+      "title": "Other",
+      "subtitle": "Configure other settings.",
+      "settings": [
+        "USE_CORS",
+        "CORS_ALLOW_METHODS",
+        "CORS_ALLOW_HEADERS",
+        "CORS_ALLOW_CREDENTIALS",
+        "USE_CROWDSEC",
+        "KEEP_UPSTREAM_HEADERS",
+        "CONTENT_SECURITY_POLICY_REPORT_ONLY",
+        "USE_ROBOTSTXT"
+      ]
+    }
+  ]
+}
