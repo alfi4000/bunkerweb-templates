@@ -26,7 +26,7 @@ Generate a Directus-focused BunkerWeb configuration that is fine tunned for publ
 
 ## Customization Tips
 
-- Double check and modify if needed the rate limits to your needs.
+- Double check and modify if needed the Rate limits and Maximum body size to your needs.
 - Do not enable Antibot as Directus resolves both admin dashboard and api on the same domain you can not reliably use the antibot feature bunkerweb provides(Directus has some security measures in place).
 - You may want to double check the security features enabled at example.com/admin/settings/project.
 
