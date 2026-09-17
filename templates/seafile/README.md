@@ -29,7 +29,7 @@ match typical media streaming workloads without sacrificing security headers.
    or choose it in the UI).
 3. **Adjust TLS automation** so `SERVER_NAME` and certificate options reflect
    the domains you expose.
-4. **Update upstream targets**: point `REVERSE_PROXY_HOST` (and the websocket
+4. **Update Reverse Proxy host targets**: point `REVERSE_PROXY_HOST` (and the websocket
    entry) to your Seafile service and confirm connectivity from BunkerWeb.
 5. **Review streaming limits**: keep `REVERSE_PROXY_BUFFERING=no` and the
    elevated timeouts unless your deployment has specific limits.
