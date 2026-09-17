@@ -31,7 +31,7 @@ match typical media streaming workloads without sacrificing security headers.
    the domains you expose.
 4. **Update Reverse Proxy host targets**: point `REVERSE_PROXY_HOST` (and the websocket
    entry) to your Seafile service and confirm connectivity from BunkerWeb.
-5. **Review streaming limits**: keep `REVERSE_PROXY_BUFFERING=no` and the
+5. **Review Reverse Proxy settings and limits**: keep `REVERSE_PROXY_BUFFERING=no` and the
    elevated timeouts unless your deployment has specific limits.
 6. **Reload BunkerWeb** and upload a file to ensure websocket connection is work through the proxy.
 
