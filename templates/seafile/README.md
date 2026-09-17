@@ -102,7 +102,7 @@ After the first time running docker compose up -d do the following:
 
 nano /opt/seafile-data/seafile/conf/seahub_settings.py
 
-Check for ```yaml FILE_SERVER_ROOT = "https://domain.com/seafhttp" ```
+Check for ```FILE_SERVER_ROOT = "https://domain.com/seafhttp"```
 The url should contain https not http.
 
 Add at the bottom:
