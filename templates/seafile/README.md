@@ -35,6 +35,9 @@ match typical media streaming workloads without sacrificing security headers.
    elevated timeouts unless your deployment has specific limits.
 6. **Reload BunkerWeb** and upload a file to ensure websocket connection is work through the proxy.
 
+7. **Post docker compose up -d instruction below the Docker Compose Example area.
+
+
 ## Customization Tips
 
 - Raise `MAX_CLIENT_SIZE` if you proxy uploads larger than 20 MiB (for example for larger file uploads).
