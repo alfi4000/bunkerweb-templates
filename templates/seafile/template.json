@@ -45,7 +45,7 @@
     "USE_SYSWARDEN_BLOCKLIST": "yes",
     "USE_SYSWARDEN_WHITELIST": "yes"
   },
-  "configs": [],
+  "configs": ["modsec-crs/seafile_false_positives.conf"],
   "steps": [
     {
       "title": "SSL / Let's Encrypt",
