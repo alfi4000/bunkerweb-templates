@@ -118,7 +118,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 Don't forgot changing domain.com to your desired domain.
 
 ## Additional Security
-- If you have setup crowdsec on your server define and add to the service in raw mode the corresponding keys >
+- If you have setup```crowdsec``` on your server define and add to the service in raw mode the corresponding keys >
 ```yaml
 USE_CROWDSEC=yes
 CROWDSEC_API=http://127.0.0.1:8080
@@ -126,12 +126,12 @@ CROWDSEC_API_KEY=your-setup-api-key-for-crowdsec
 CROWDSEC_APPSEC_URL=http://127.0.0.1:7422/
 ```
 Change the ip and port to your setup instance ip and port if they differ.
-- Clamav is not needed as every upload bypasses it as seafile uses put chunk uploads which is essentially splitting a file into small parts and uploading one at a time.
-- Syswarden can also be used if setup correcly by just adding the bellow two lines to your active service. (Be aware you have to have it setup on your machine this is not just adding and done.)
+- ```Clamav``` is not needed as every upload bypasses it as seafile uses put chunk uploads which is essentially splitting a file into small parts and uploading one at a time.
+- ```Syswarden``` can also be used if setup correcly by just adding the bellow two lines to your active service. (Be aware you have to have it setup on your machine this is not just adding and done.)
 ```yaml
 USE_SYSWARDEN_BLOCKLIST=yes
 USE_SYSWARDEN_WHITELIST=yes
 ```
-This is not a must just an optional but adviced security practice to combine Crowdsec and Syswarden.
+This is not a must just an optional but adviced security practice to combine ```Crowdsec``` and ```Syswarden```.
 
 ## Validation
