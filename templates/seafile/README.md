@@ -2,11 +2,14 @@
 
 ## Overview
 
+
 Provision a BunkerWeb configuration tailored for Seafile so HTTPS automation,
 reverse proxy buffering, websocket upgrades, payload limits, and CRS exclusions
 match typical media streaming workloads without sacrificing security headers.
 
+
 ## Prerequisites
+
 
 - A setup Seafile instance example docker compose can be found at the bottom.
 - Access to the BunkerWeb UI or environment variables to assign template
@@ -15,12 +18,15 @@ match typical media streaming workloads without sacrificing security headers.
 
 ## Files
 
+
 - `template.json` – Template definition with steps for TLS, upstreams, and
   header tuning.
 - `configs/modsec-crs/seafile_false_positives.conf` – Removes CRS rules that
   interfere with the Seafile uploading.
 
+
 ## Setup
+
 
 1. **Import the template**
    - Follow the repository's [installation guide](../../README.md#installing-templates)
@@ -40,6 +46,7 @@ match typical media streaming workloads without sacrificing security headers.
 
 ## Customization Tips
 
+
 - Raise `MAX_CLIENT_SIZE` if you proxy uploads larger than 20 MiB (for example for larger file uploads).
 - Keep `REVERSE_PROXY_WS_1=yes` for `/socket` so Jellyfin websockets upgrade
   correctly.
@@ -48,9 +55,11 @@ match typical media streaming workloads without sacrificing security headers.
 - Modify `CONTENT_SECURITY_POLICY` and `PERMISSIONS_POLICY` only if you embed
   Seafile in another application and need additional origins.
 - Edit `configs/modsec-crs/jellyfin_false_positives.conf` if future CRS updates
+- 
   require different rule IDs.
 
 ## Docker Compose Example
+
 
 ```yaml
 services:
@@ -99,7 +108,9 @@ networks:
   seafile-net:
 ```
 
+
 ## Additional Tweaks required to get Seafile to trust the reverse proxy.
+
 
 After the first time running docker compose up -d do the following:
 
@@ -117,7 +128,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ```
 Don't forgot changing domain.com to your desired domain.
 
+
 ## Additional Security
+
+
 - If you have setup```crowdsec``` on your server define and add to the service in raw mode the corresponding keys >
 ```yaml
 USE_CROWDSEC=yes
