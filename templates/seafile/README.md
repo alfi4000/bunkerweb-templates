@@ -2,7 +2,7 @@
 
 ## Overview
 
-Provision a BunkerWeb configuration tailored for Jellyfin so HTTPS automation,
+Provision a BunkerWeb configuration tailored for Seafile so HTTPS automation,
 reverse proxy buffering, websocket upgrades, payload limits, and CRS exclusions
 match typical media streaming workloads without sacrificing security headers.
 
@@ -11,7 +11,7 @@ match typical media streaming workloads without sacrificing security headers.
 - A setup Seafile instance example docker compose can be found at the bottom.
 - Access to the BunkerWeb UI or environment variables to assign template
   settings.
-- Confirm Jellyfin trusts the proxy IP which can be found below.
+- Confirm Seafile trusts the proxy IP which can be found below.
 
 ## Files
 
