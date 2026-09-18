@@ -35,7 +35,7 @@ match typical media streaming workloads without sacrificing security headers.
    elevated timeouts unless your deployment has specific limits.
 6. **Reload BunkerWeb** and upload a file to ensure websocket connection is work through the proxy.
 
-7. After Docker container was started with docker compose up -d follow the instruction below the Docker Compose Example area.
+7. After Docker container was started with ```docker compose up -d``` follow the instruction below the Docker Compose Example area.
 
 
 ## Customization Tips
