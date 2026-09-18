@@ -1,6 +1,6 @@
 {
-  "id": "sealfile-template",
-  "name": "Sealfile Template",
+  "id": "seafile-template",
+  "name": "Seafile Template",
   "settings": {
     "SERVER_NAME": "domain.com",
     "USE_ANTIBOT": "javascript",
