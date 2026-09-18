@@ -132,7 +132,7 @@ Don't forgot changing domain.com to your desired domain.
 ## Additional Security
 
 
-- If you have setup```crowdsec``` on your server define and add to the service in raw mode the corresponding keys >
+- If you have setup```Crowdsec``` on your server define and add to the service in raw mode the corresponding keys >
 ```yaml
 USE_CROWDSEC=yes
 CROWDSEC_API=http://127.0.0.1:8080
