@@ -2,7 +2,6 @@
   "id": "sealfile-template",
   "name": "Sealfile Template",
   "settings": {
-    "IS_DRAFT": "no",
     "SERVER_NAME": "domain.com",
     "USE_ANTIBOT": "javascript",
     "ANTIBOT_IGNORE_URI": "^/build/ ^/api/ ^/api2/ ^/seafhttp/ ^/share/ ^/uploads ^/zip-downloads ^/thumbnail/ ^/office-convert/ ^/seafile-office-web/",
@@ -41,9 +40,7 @@
     "REVERSE_PROXY_REQUEST_BUFFERING": "no",
     "REVERSE_PROXY_READ_TIMEOUT": "3600s",
     "REVERSE_PROXY_SEND_TIMEOUT": "3600s",
-    "USE_ROBOTSTXT": "yes",
-    "USE_SYSWARDEN_BLOCKLIST": "yes",
-    "USE_SYSWARDEN_WHITELIST": "yes"
+    "USE_ROBOTSTXT": "yes"
   },
   "configs": ["modsec-crs/seafile_false_positives.conf"],
   "steps": [
