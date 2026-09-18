@@ -77,7 +77,7 @@ services:
     image: seafile-mc-s3:11.0-latest
     container_name: seafile
     ports:
-      - "7841:80"
+      - "127.0.0.1:7841:80"
 #     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
       - /opt/seafile-data:/shared   # Required, specifies the path to Seafile data persistent store.
