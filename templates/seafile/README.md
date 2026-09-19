@@ -2,102 +2,105 @@
 
 ## Overview
 
-
-Provision a BunkerWeb configuration tailored for Seafile so HTTPS automation,
-reverse proxy buffering, websocket upgrades, payload limits, and CRS exclusions
-match typical media streaming workloads without sacrificing security headers.
-
+This template proxies Seafile through BunkerWeb with upload, WebDAV, rate-limit, compression, and
+client-compatibility defaults. The deployment example targets Seafile Community Edition 11.0.x; use
+Seafile's version-specific Compose file when deploying another release.
 
 ## Prerequisites
 
-
-- A setup Seafile instance example docker compose can be found at the bottom.
-- Access to the BunkerWeb UI or environment variables to assign template
-  settings.
-- Confirm Seafile trusts the proxy IP which can be found below.
-
-## Files
-
-
-- `template.json` – Template definition with steps for TLS, upstreams, and
-  header tuning.
-- `configs/modsec-crs/seafile_false_positives.conf` – Removes CRS rules that
-  interfere with the Seafile uploading.
-
+- A running Seafile server that BunkerWeb can reach.
+- A public hostname pointing to BunkerWeb.
+- Access to the BunkerWeb web UI or service environment variables.
 
 ## Setup
 
+1. Import `template.json` by following the repository's
+   [installation guide](../../README.md#installing-templates).
+2. Assign `USE_TEMPLATE=seafile` to the service, or select **Seafile** in the web UI.
+3. Replace `SERVER_NAME`, `EMAIL_LETS_ENCRYPT`, and `REVERSE_PROXY_HOST` with values for your
+   deployment. The default upstream, `http://seafile`, assumes both containers share a Docker network.
+4. Configure Seafile's public URL for HTTPS. For a fresh Seafile 11 Docker deployment, set
+   `SEAFILE_SERVER_HOSTNAME` and `FORCE_HTTPS_IN_CONF=true`. For an existing deployment, verify:
 
-1. **Import the template**
-   - Follow the repository's [installation guide](../../README.md#installing-templates)
-     for the web UI or plugin bundle method.
-2. **Assign the template** to the site serving Seafile (`USE_TEMPLATE=seafile`
-   or choose it in the UI).
-3. **Adjust TLS automation** so `SERVER_NAME` and certificate options reflect
-   the domains you expose.
-4. **Update Reverse Proxy host targets**: point `REVERSE_PROXY_HOST` (and the websocket
-   entry) to your Seafile service and confirm connectivity from BunkerWeb.
-5. **Review Reverse Proxy settings and limits**: keep `REVERSE_PROXY_BUFFERING=no` and the
-   elevated timeouts unless your deployment has specific limits.
-6. **Reload BunkerWeb** and upload a file to ensure websocket connection is work through the proxy.
+   ```python
+   SERVICE_URL = "https://seafile.example.com"
+   FILE_SERVER_ROOT = "https://seafile.example.com/seafhttp"
+   CSRF_TRUSTED_ORIGINS = ["https://seafile.example.com"]
+   SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+   ```
 
-7. After Docker container was started with ```docker compose up -d``` follow the instruction below the Docker Compose Example area.
+   Put manual overrides in `/opt/seafile-data/seafile/conf/seahub_settings.py`, replace the example
+   hostname, and restart Seafile. Do not add a trailing slash to the trusted origin.
+5. Reload BunkerWeb, sign in through the public URL, and upload and download a test file.
 
+The `COOKIE_FLAGS_4` override deliberately omits `HttpOnly` for Seafile's `sfcsrftoken` cookie. It
+narrows BunkerWeb's wildcard cookie policy so Seahub can read the CSRF token without weakening the
+flags on other cookies.
 
-## Customization Tips
+## Uploads, WebDAV, and notifications
 
+`MAX_CLIENT_SIZE=512m` limits each request, not the total file size used by chunked clients. Raising it
+also raises ModSecurity's in-memory request-body limit, so increase it only for clients that need larger
+single requests.
 
-- Raise `MAX_CLIENT_SIZE` if you proxy uploads larger than 20 MiB (for example for larger file uploads).
-- Keep `REVERSE_PROXY_WS_1=yes` for `/socket` so Jellyfin websockets upgrade
-  correctly.
-- Adjust `LIMIT_REQ_RATE` to match your concurrent stream expectations; set it
-  higher for multi-user households.
-- Modify `CONTENT_SECURITY_POLICY` and `PERMISSIONS_POLICY` only if you embed
-  Seafile in another application and need additional origins.
-- Edit `configs/modsec-crs/jellyfin_false_positives.conf` if future CRS updates
-- 
-  require different rule IDs.
+The template allows WebDAV methods and exempts `/seafdav` from the JavaScript challenge, but SeafDAV is
+disabled by default in Seafile. Enable it in `seafdav.conf`, set `share_name = /seafdav`, and test with a
+WebDAV client. See Seafile's [WebDAV documentation](https://manual.seafile.com/11.0/extension/webdav/).
 
-## Docker Compose Example
+WebSockets are not enabled on the main `/` upstream. Seafile's optional notification server listens on
+a separate port and needs dedicated `/notification/ping` and `/notification` proxy routes; configure
+those only after enabling the service by following Seafile's
+[notification server documentation](https://manual.seafile.com/11.0/deploy/notification-server/).
 
+The bad-behavior status list excludes `401`, `403`, and `404`. Authentication, permission checks, and
+missing-object probes can legitimately return those codes, so counting them toward an IP ban can lock
+out normal sync or WebDAV clients.
+
+## Docker Compose example
+
+This is a small Seafile 11.0 example based on the
+[official deployment guide](https://manual.seafile.com/11.0/docker/deploy_seafile_with_docker/). It binds
+Seafile only to localhost because BunkerWeb is the public entry point. Attach the BunkerWeb container to
+the `seafile-net` network so the default `http://seafile` upstream resolves; otherwise, use an upstream
+address reachable from BunkerWeb.
 
 ```yaml
 services:
   db:
     image: mariadb:10.11
-    container_name: seafile-mysql
+    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=change-to-a-secure-password-of-your-choice  # Required, set the root's password of MySQL service.
-      - MYSQL_LOG_CONSOLE=true
-      - MARIADB_AUTO_UPGRADE=1
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}"
+      MYSQL_LOG_CONSOLE: "true"
+      MARIADB_AUTO_UPGRADE: "1"
     volumes:
-      - /opt/seafile-mysql/db:/var/lib/mysql  # Required, specifies the path to MySQL data persistent store.
+      - /opt/seafile-mysql/db:/var/lib/mysql
     networks:
       - seafile-net
 
   memcached:
     image: memcached:1.6.18
-    container_name: seafile-memcached
+    restart: unless-stopped
     entrypoint: memcached -m 256
     networks:
       - seafile-net
 
   seafile:
-    image: seafile-mc-s3:11.0-latest
-    container_name: seafile
+    image: seafileltd/seafile-mc:11.0-latest
+    restart: unless-stopped
     ports:
       - "127.0.0.1:7841:80"
-#     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
-      - /opt/seafile-data:/shared   # Required, specifies the path to Seafile data persistent store.
+      - /opt/seafile-data:/shared
     environment:
-      - DB_HOST=db
-      - DB_ROOT_PASSWD=change-to-a-secure-password-of-your-choice  # Required, the value should be root's password of MySQL service.
-      - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
-      - SEAFILE_ADMIN_EMAIL=admin@domain.com # Specifies Seafile admin user, default is 'me@example.com'.
-      - SEAFILE_ADMIN_PASSWORD=change-to-a-secure-password-of-your-choice     # Specifies Seafile admin password, default is 'asecret'.
-      - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
-      - SEAFILE_SERVER_HOSTNAME=domain.com # Specifies your host name if https is enabled.
+      DB_HOST: db
+      DB_ROOT_PASSWD: "${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD}"
+      TIME_ZONE: Etc/UTC
+      SEAFILE_ADMIN_EMAIL: "${SEAFILE_ADMIN_EMAIL:-admin@example.com}"
+      SEAFILE_ADMIN_PASSWORD: "${SEAFILE_ADMIN_PASSWORD:?Set SEAFILE_ADMIN_PASSWORD}"
+      SEAFILE_SERVER_LETSENCRYPT: "false"
+      SEAFILE_SERVER_HOSTNAME: seafile.example.com
+      FORCE_HTTPS_IN_CONF: "true"
     depends_on:
       - db
       - memcached
@@ -106,46 +109,33 @@ services:
 
 networks:
   seafile-net:
+    name: seafile-net
 ```
 
+Set the required environment variables before starting the stack:
 
-## Additional Tweaks required to get Seafile to trust the reverse proxy.
-
-
-After the first time running docker compose up -d do the following:
-
-nano /opt/seafile-data/seafile/conf/seahub_settings.py
-
-Check for ```FILE_SERVER_ROOT = "https://domain.com/seafhttp"```
-The url should contain https not http.
-
-Add at the bottom:
-```yaml
-CSRF_TRUSTED_ORIGINS = ['https://domain.com/']
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+```bash
+export MYSQL_ROOT_PASSWORD='replace-with-a-long-random-value'
+export SEAFILE_ADMIN_PASSWORD='replace-with-a-different-long-random-value'
+docker compose config
+docker compose up -d
 ```
-Don't forgot changing domain.com to your desired domain.
-
-
-## Additional Security
-
-
-- If you have setup```Crowdsec``` on your server define and add to the service in raw mode the corresponding keys >
-```yaml
-USE_CROWDSEC=yes
-CROWDSEC_API=http://127.0.0.1:8080
-CROWDSEC_API_KEY=your-setup-api-key-for-crowdsec
-CROWDSEC_APPSEC_URL=http://127.0.0.1:7422/
-```
-Change the ip and port to your setup instance ip and port if they differ.
-- ```Clamav``` is not needed as every upload bypasses it as seafile uses put chunk uploads which is essentially splitting a file into small parts and uploading one at a time.
-- ```Syswarden``` can also be used if setup correcly by just adding the bellow two lines to your active service. (Be aware you have to have it setup on your machine this is not just adding and done.)
-```yaml
-USE_SYSWARDEN_BLOCKLIST=yes
-USE_SYSWARDEN_WHITELIST=yes
-```
-This is not a must just an optional but adviced security practice to combine ```Crowdsec``` and ```Syswarden```.
 
 ## Validation
+
+Before importing the template:
+
+```bash
+jq . template.json
+jq -e --arg expected "$(basename "$PWD")" '.id == $expected' template.json
+jq -e '(.settings | keys | sort) == ([.steps[] | .settings[]] | sort)' template.json
+```
+
+After applying it:
+
+- Confirm the BunkerWeb scheduler reload completes without a template or unknown-setting error.
+- Sign in, browse a library, and upload and download a file larger than the default 10 MiB limit.
+- If SeafDAV is enabled, run `curl -u user:password -X PROPFIND -H 'Depth: 1'`
+  `https://seafile.example.com/seafdav/` and confirm it is not challenged by Antibot.
+- Check BunkerWeb logs for rate-limit, bad-behavior, and ModSecurity events before changing security
+  controls.
