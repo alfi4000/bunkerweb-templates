@@ -1,5 +1,7 @@
 # Docuseal Template
 
+## Important Api was not tested against Modsec, when you use the api make sure to test it and cross check the Modsec logs for false positives!
+
 ## Overview
 
 This template proxies Docuseal through BunkerWeb with automatic Let's Encrypt certificates, reverse proxying and a 50m request size limit.
