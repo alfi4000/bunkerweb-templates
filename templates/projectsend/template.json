@@ -10,6 +10,7 @@
     "USE_CROWDSEC": "yes",
     "CROWDSEC_API": "http://127.0.0.1:8080",
     "CROWDSEC_API_KEY": "replace-with-your-crowdsec-api-key",
+    "CROWDSEC_APPSEC_URL": "http://127.0.0.1:7422/",
     "INTERCEPTED_ERROR_CODES": "404 405 413 429 500 501 502 503 504",
     "GZIP_PROXIED": "expired no-cache no-store private auth",
     "KEEP_UPSTREAM_HEADERS": "Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy",
@@ -131,6 +132,7 @@
       "title": "Other settings",
       "subtitle": "Additional settings for this service.",
       "settings": [
+        "CROWDSEC_APPSEC_URL",
         "INTERCEPTED_ERROR_CODES",
         "CONTENT_SECURITY_POLICY_REPORT_ONLY",
         "COOKIE_FLAGS_2",
