@@ -1,6 +1,6 @@
 # Docuseal Template
 
-## Important Api was not tested against Modsec, when you use the api make sure to test it and cross check the Modsec logs for false positives!
+## Important the Docuseal Api was not tested against Modsec, when you use the api make sure to test it and cross check the Modsec logs for false positives!
 
 ## Overview
 
