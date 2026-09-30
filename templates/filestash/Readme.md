@@ -26,6 +26,7 @@ The values below are examples. Replace them with your own before using the templ
 - `admin@example.com` → your own email address
 - `http://filestash` → the name of the service's container on the shared Docker network, or its IP address and port, for example `http://10.0.0.5:8080`
 - `replace-with-your-crowdsec-api-key` → the API key generated in CrowdSec (for example with `cscli bouncers add <name>`)
+- `example-user` → your own username
 
 ## Notes
 
@@ -152,6 +153,48 @@ Files are referenced relative to the template's `configs/` directory and grouped
 | Type | File in repository | Reference in `template.json` | Purpose |
 | --- | --- | --- | --- |
 | `modsec-crs` | `templates/filestash/configs/modsec-crs/modsec-crs-exclude-filestash.conf` | `modsec-crs/modsec-crs-exclude-filestash.conf` | ModSecurity rules loaded before the OWASP Core Rule Set (typically rule exclusions / false-positive fixes). |
+
+## Docker Compose example
+
+Usernames and passwords below are placeholders. Replace them with your own values before deploying.
+
+```yaml
+version: '2'
+services:
+  app:
+    container_name: filestash
+    image: machines/filestash:latest
+    restart: always
+    environment:
+    - APPLICATION_URL=stash.example.com
+    - CANARY=true
+    - OFFICE_URL=http://wopi_server:9980
+    - OFFICE_FILESTASH_URL=http://app:8334
+    - OFFICE_REWRITE_URL=https://office.example.com
+    ports:
+    - "8334:8334"
+    volumes:
+    - filestash:/app/data/state/
+    - /root/filestash/plugins:/app/data/state/plugins
+  wopi_server:
+    container_name: filestash_wopi
+    image: collabora/code:24.04.10.2.1
+    restart: always
+    environment:
+    - "extra_params=--o:ssl.enable=false"
+    - aliasgroup1="https://.*:443"
+    command:
+    - /bin/bash
+    - -c
+    - |
+         curl -o /usr/share/coolwsd/browser/dist/branding-desktop.css https://gist.githubusercontent.com/mickael-kerjean/bc1f57cd312cf04731d30185cc4e7ba2/raw/d706dcdf23c21441e5af289d871b33defc2770ea/destop.css
+         /bin/su -s /bin/bash -c '/start-collabora-online.sh' cool
+    user: "example-user"
+    ports:
+    - "9980:9980"
+volumes:
+  filestash: {}
+```
 
 ## Validation
 
