@@ -16,7 +16,7 @@ This template proxies Projectsend through BunkerWeb with automatic Let's Encrypt
 2. When the **Missing Custom Configs** dialog appears, upload every file listed in the [Custom configs](#custom-configs) section from `configs/`, then save.
 3. Assign `USE_TEMPLATE=projectsend` to the service, or select **Projectsend** in the web UI.
 4. Replace `SERVER_NAME`, `EMAIL_LETS_ENCRYPT` and `REVERSE_PROXY_HOST` with values for your deployment.
-5. Reload BunkerWeb, open the public URL, and test sign-in plus an upload and download.
+5. Reload BunkerWeb, open the public URL, and test sign-in and the main workflow of the application (for example a document, upload or API call).
 
 ## Placeholders
 
@@ -24,18 +24,22 @@ The values below are examples. Replace them with your own before using the templ
 
 - `example.com` → your own domain name
 - `admin@example.com` → your own email address
-- `http://projectsend` → the name of the service's container on the shared Docker network, or its IP address and port, for example `http://10.0.0.5:8080`
+- `http://projectsend:80` → the name of the service's container on the shared Docker network, or its IP address and port, for example `http://10.0.0.5:8080`
 - `replace-with-your-crowdsec-api-key` → the API key generated in CrowdSec (for example with `cscli bouncers add <name>`)
 - `example-user` → your own username
-- `replace-with-a-long-random-value` → your own long random secret
+- `openssl rand -hex 24` → generates a long random secret for each variable
+- the example addresses `192.0.2.x`, `198.51.100.x` and `203.0.113.x` → the IP addresses or ranges that should be allowed
 
 ## Notes
 
 - **Certificates:** the HTTP challenge needs port 80 on BunkerWeb to be reachable from the internet for every domain in `SERVER_NAME`.
-- **Upstream:** `http://projectsend` is a container name. It only resolves when BunkerWeb and the application share a Docker network; otherwise replace it with the IP address and port of the service, for example `http://10.0.0.5:8080`. Add the port if the application does not listen on 80.
+- **Upstream:** `http://projectsend:80` is a container name and port. It only resolves when BunkerWeb and the application share a Docker network (the Compose example joins the external `bw-services` network with the alias `projectsend`; attach BunkerWeb to the same network); otherwise replace it with the IP address and port of the service, for example `http://10.0.0.5:8080`.
 - **Uploads:** `MAX_CLIENT_SIZE=8192m` limits each request, not the total size of a file sent by a chunked client. Raise it only if clients need larger single requests.
 - **Methods:** only the listed HTTP methods are accepted; anything else is rejected before reaching the application.
 - **Custom configs (`modsec-crs`):** ModSecurity rules loaded before the OWASP Core Rule Set (typically rule exclusions / false-positive fixes).
+- **CrowdSec:** `127.0.0.1` points to the BunkerWeb container itself. If CrowdSec runs in another container or on another host, use its container name or IP address in `CROWDSEC_API` and `CROWDSEC_APPSEC_URL`.
+- **Anti-bot:** `ANTIBOT_IGNORE_URI` (`^/build/ ^/api/ ^/share/ ^/uploads ^/zip-downloads`) skips the challenge for those paths because API clients cannot solve it. Those paths are protected only by the application and the other security features.
+- **Allowlist:** the addresses in the allowlist are documentation examples. Replace them with the IP addresses or ranges that may bypass the security checks.
 
 ## Settings
 
@@ -63,12 +67,12 @@ Configure reverse proxy settings.
 | Setting | Value | Description |
 | --- | --- | --- |
 | `USE_REVERSE_PROXY` | `yes` | Forward requests to an upstream application. |
-| `REVERSE_PROXY_INTERCEPT_ERRORS` | `no` | — |
-| `REVERSE_PROXY_HOST` | `http://projectsend` | Upstream application: container name, or IP address and port. |
-| `REVERSE_PROXY_BUFFERING` | `no` | — |
-| `REVERSE_PROXY_REQUEST_BUFFERING` | `no` | — |
-| `REVERSE_PROXY_READ_TIMEOUT` | `3600s` | — |
-| `REVERSE_PROXY_SEND_TIMEOUT` | `3600s` | — |
+| `REVERSE_PROXY_INTERCEPT_ERRORS` | `no` | Replace upstream error pages with BunkerWeb error pages. |
+| `REVERSE_PROXY_HOST` | `http://projectsend:80` | Upstream application: container name, or IP address and port. |
+| `REVERSE_PROXY_BUFFERING` | `no` | Buffer upstream responses in BunkerWeb before sending them to the client. |
+| `REVERSE_PROXY_REQUEST_BUFFERING` | `no` | Buffer the whole client request before forwarding it upstream. |
+| `REVERSE_PROXY_READ_TIMEOUT` | `3600s` | Maximum time to wait for the upstream to send data. |
+| `REVERSE_PROXY_SEND_TIMEOUT` | `3600s` | Maximum time to wait while sending data to the upstream. |
 
 ### Rate Limiting
 
@@ -76,9 +80,9 @@ Configure rate limiting settings.
 
 | Setting | Value | Description |
 | --- | --- | --- |
-| `LIMIT_CONN_MAX_HTTP1` | `50` | — |
-| `LIMIT_CONN_MAX_HTTP2` | `500` | — |
-| `LIMIT_CONN_MAX_HTTP3` | `500` | — |
+| `LIMIT_CONN_MAX_HTTP1` | `50` | Maximum concurrent HTTP/1 connections per client IP. |
+| `LIMIT_CONN_MAX_HTTP2` | `500` | Maximum concurrent HTTP/2 streams per client IP. |
+| `LIMIT_CONN_MAX_HTTP3` | `500` | Maximum concurrent HTTP/3 streams per client IP. |
 | `LIMIT_REQ_RATE` | `25r/s` | Allowed request rate for the matching URL (for example 15r/s). |
 
 ### Security
@@ -88,10 +92,10 @@ Configure security settings.
 | Setting | Value | Description |
 | --- | --- | --- |
 | `USE_ANTIBOT` | `javascript` | Challenge visitors to block bots. |
-| `ANTIBOT_IGNORE_URI` | `^/build/ ^/api/ ^/share/ ^/uploads ^/zip-downloads` | — |
-| `BAD_BEHAVIOR_THRESHOLD` | `20` | — |
+| `ANTIBOT_IGNORE_URI` | `^/build/ ^/api/ ^/share/ ^/uploads ^/zip-downloads` | URL patterns (regex) that skip the anti-bot challenge, for example API routes. |
+| `BAD_BEHAVIOR_THRESHOLD` | `20` | Number of bad responses before the client IP is banned. |
 | `USE_CROWDSEC` | `yes` | Enable the CrowdSec integration. |
-| `CROWDSEC_API` | `http://127.0.0.1:8080` | — |
+| `CROWDSEC_API` | `http://127.0.0.1:8080` | URL of the CrowdSec local API. |
 | `CROWDSEC_API_KEY` | `replace-with-your-crowdsec-api-key` | API key generated in CrowdSec for the BunkerWeb bouncer. |
 
 ### Performance
@@ -100,8 +104,8 @@ Configure performance settings.
 
 | Setting | Value | Description |
 | --- | --- | --- |
-| `CLIENT_CACHE_ETAG` | `no` | — |
-| `GZIP_PROXIED` | `expired no-cache no-store private auth` | — |
+| `CLIENT_CACHE_ETAG` | `no` | Send ETag headers for cached files. |
+| `GZIP_PROXIED` | `expired no-cache no-store private auth` | Which proxied responses are compressed, based on their caching headers. |
 | `MAX_CLIENT_SIZE` | `8192m` | Maximum size of a single request body. |
 | `SERVE_FILES` | `no` | Serve static files from BunkerWeb itself (off when proxying an app). |
 
@@ -111,7 +115,7 @@ Configure whitelist / allowlist settings.
 
 | Setting | Value | Description |
 | --- | --- | --- |
-| `WHITELIST_IP` | `194.163.173.229 57.129.118.35 57.129.118.37` | — |
+| `WHITELIST_IP` | `192.0.2.10 198.51.100.10 203.0.113.10` | IP addresses or ranges that bypass the security checks. |
 
 ### Other
 
@@ -119,11 +123,11 @@ Configure other settings.
 
 | Setting | Value | Description |
 | --- | --- | --- |
-| `KEEP_UPSTREAM_HEADERS` | `Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy` | — |
-| `PROXY_BUFFERS` | `8 32k` | — |
-| `PROXY_BUFFER_SIZE` | `32k` | — |
-| `PROXY_BUSY_BUFFERS_SIZE` | `64k` | — |
-| `USE_ROBOTSTXT` | `yes` | — |
+| `KEEP_UPSTREAM_HEADERS` | `Content-Security-Policy Strict-Transport-Security X-Frame-Options X-Content-Type-Options Referrer-Policy` | Upstream headers that BunkerWeb passes through instead of overwriting. |
+| `PROXY_BUFFERS` | `8 32k` | Number and size of NGINX buffers used for upstream responses. |
+| `PROXY_BUFFER_SIZE` | `32k` | Size of the buffer for the first part of the upstream response. |
+| `PROXY_BUSY_BUFFERS_SIZE` | `64k` | Limit of buffers busy sending a response to the client. |
+| `USE_ROBOTSTXT` | `yes` | Serve a robots.txt file generated by BunkerWeb. |
 
 ### Fale Positives - False Positives Exclusion config
 
@@ -137,8 +141,8 @@ Additional settings for this service.
 
 | Setting | Value | Description |
 | --- | --- | --- |
-| `CROWDSEC_APPSEC_URL` | `http://127.0.0.1:7422/` | — |
-| `INTERCEPTED_ERROR_CODES` | `404 405 413 429 500 501 502 503 504` | — |
+| `CROWDSEC_APPSEC_URL` | `http://127.0.0.1:7422/` | URL of the CrowdSec AppSec component. |
+| `INTERCEPTED_ERROR_CODES` | `404 405 413 429 500 501 502 503 504` | Upstream status codes replaced by BunkerWeb error pages. |
 | `CONTENT_SECURITY_POLICY_REPORT_ONLY` | `yes` | — |
 | `COOKIE_FLAGS_2` | `projectsend_xsrf SameSite=Lax` | Flags (HttpOnly, Secure, SameSite…) added to cookies. |
 | `ALLOWED_METHODS` | `GET\|POST\|HEAD\|PUT\|DELETE\|PATCH\|OPTIONS` | HTTP methods that are accepted; all others are rejected. |
@@ -192,6 +196,11 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      default:
+      bw-services:
+        aliases:
+          - projectsend
 
   db:
     image: mysql:8.0
@@ -209,15 +218,19 @@ services:
     image: redis:7-alpine
     container_name: projectsend-redis
     restart: unless-stopped
+
+networks:
+  bw-services:
+    external: true
 ```
 
 Set the required environment variables before starting the stack:
 
 ```bash
-export DB_PASSWORD='replace-with-a-long-random-value'
-export DB_ROOT_PASSWORD='replace-with-a-long-random-value'
-export MYSQL_ROOT_PASSWORD='replace-with-a-long-random-value'
-export MYSQL_PASSWORD='replace-with-a-long-random-value'
+export DB_PASSWORD="$(openssl rand -hex 24)"
+export DB_ROOT_PASSWORD="$(openssl rand -hex 24)"
+export MYSQL_ROOT_PASSWORD="$(openssl rand -hex 24)"
+export MYSQL_PASSWORD="$(openssl rand -hex 24)"
 docker compose config
 docker compose up -d
 ```
@@ -236,7 +249,7 @@ for f in $(jq -r '.configs[]' template.json); do test -f "configs/$f" || echo "m
 After applying it:
 
 - Confirm the BunkerWeb scheduler reload completes without a template or unknown-setting error.
-- Sign in and test an upload and download.
+- Sign in and test the main workflow of the application (for example an upload, download or API call).
 - Check BunkerWeb logs for rate-limit, bad-behavior, and ModSecurity events before changing security controls.
 
 
