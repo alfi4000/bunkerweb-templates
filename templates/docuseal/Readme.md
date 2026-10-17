@@ -194,6 +194,9 @@ Before importing the template:
 jq . template.json
 jq -e --arg expected "$(basename "$PWD")" '.id == $expected' template.json
 jq -e '(.settings | keys | sort) == ([.steps[] | .settings[]] | sort)' template.json
+for f in $(jq -r '.configs[]' template.json); do
+  test -f "configs/$f" || echo "missing: $f"
+done
 ```
 
 After applying it:
