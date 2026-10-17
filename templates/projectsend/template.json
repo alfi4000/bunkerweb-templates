@@ -36,7 +36,7 @@
     "REVERSE_PROXY_READ_TIMEOUT": "3600s",
     "REVERSE_PROXY_SEND_TIMEOUT": "3600s",
     "USE_ROBOTSTXT": "yes",
-    "WHITELIST_IP": "194.163.173.229 57.129.118.35 57.129.118.37"
+    "WHITELIST_IP": ""
   },
   "configs": [
     "modsec-crs/modsec-crs-exclude-projectsend.conf"
